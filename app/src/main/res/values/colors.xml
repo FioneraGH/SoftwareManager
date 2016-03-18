@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="grey" type="color">#FF666666</item>
+    <item name="grey1" type="color">#FFcccccc</item>
+    <item name="grey2" type="color">#FFeeeeee</item>
+
+    <color name="transparent">#00000000</color>
+    <color name="transparent1">#11000000</color>
+    <color name="transparent2">#33000000</color>
+    <color name="transparent3">#66000000</color>
+
+    <color name="green">#008000</color>
+    <color name="green2">#8DBE53</color>
+
+    <color name="blue0">#FF2c5aa9</color>
+    <color name="blue">#0066FF</color>
+    <color name="blue2">#4A9DFF</color>
+
+    <color name="yellow">#ffff00</color>
+    <color name="yellow1">#f9b72c</color>
+    <color name="trans_yellow1">#AAF59900</color>
+
+    <color name="white">#ffffff</color>
+    <color name="white1">#f8f8f8</color>
+
+    <item name="drawer_bg_color_normal" type="color">#00ffffff</item>
+    <item name="drawer_bg_color_press" type="color">#ffeeeeee</item>
+
+
+    <color name="background_tab_pressed">#ffffff</color>
+
+    <color name="gplus_color_1">#3e802f</color>
+    <color name="gplus_color_2">#f4b400</color>
+    <color name="gplus_color_3">#427fed</color>
+    <color name="gplus_color_4">#b23424</color>
+    <integer-array name="gplus_colors">
+        <item>@color/gplus_color_1</item>
+        <item>@color/gplus_color_2</item>
+        <item>@color/gplus_color_3</item>
+        <item>@color/gplus_color_4</item>
+    </integer-array>
+
+</resources>

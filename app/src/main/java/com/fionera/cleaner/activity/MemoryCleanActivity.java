@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -21,7 +20,7 @@ import com.fionera.cleaner.R;
 import com.fionera.cleaner.adapter.ClearMemoryAdapter;
 import com.fionera.cleaner.base.BaseSwipeBackActivity;
 import com.fionera.cleaner.bean.AppProcessInfo;
-import com.fionera.cleaner.model.StorageSize;
+import com.fionera.cleaner.bean.StorageSize;
 import com.fionera.cleaner.service.CoreService;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
@@ -136,7 +135,6 @@ public class MemoryCleanActivity extends BaseSwipeBackActivity
         if (apps.size() > 0) {
             header.setVisibility(View.VISIBLE);
             btnClear.setVisibility(View.VISIBLE);
-
         } else {
             header.setVisibility(View.GONE);
             btnClear.setVisibility(View.GONE);

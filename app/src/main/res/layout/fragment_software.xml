@@ -11,7 +11,7 @@
         android:background="#f6f6f6">
 
         <TextView
-            android:id="@+id/topText"
+            android:id="@+id/tv_top_tips"
             android:textColor="#787878"
             android:text="非系统应用建议禁止"
             android:layout_marginTop="10dp"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content" />
 
         <ListView
-            android:layout_below="@+id/topText"
+            android:layout_below="@+id/tv_top_tips"
             android:id="@+id/listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

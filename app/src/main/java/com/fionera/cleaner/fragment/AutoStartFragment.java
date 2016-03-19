@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fionera.cleaner.adapter.AutoStartAdapter;
-import com.fionera.cleaner.model.AutoStartInfo;
+import com.fionera.cleaner.bean.AutoStartInfo;
 import com.fionera.cleaner.utils.BootStartUtils;
 import com.fionera.cleaner.utils.ShellUtils;
 import com.fionera.cleaner.utils.ShowToast;
@@ -29,59 +29,37 @@ import butterknife.ButterKnife;
 import butterknife.Bind;
 import butterknife.OnClick;
 
-
-public class AutoStartFragment extends Fragment {
-
+public class AutoStartFragment
+        extends Fragment {
 
     Context mContext;
-    public static final int REFRESH_BT = 111;
-    private static final String ARG_POSITION = "position";
-    private int position; // 0:普通软件，2 系统软件
+    private int position;
     AutoStartAdapter mAutoStartAdapter;
 
-    @Bind(R.id.listview)
-    ListView listview;
-
-    @Bind(R.id.ll_bottom_op)
-    LinearLayout bottom_lin;
-
+    @Bind(R.id.tv_top_tips)
+    TextView topText;
     @Bind(R.id.disable_button)
     Button disableButton;
-    @Bind(R.id.topText)
-    TextView topText;
+    @Bind(R.id.listview)
+    ListView listview;
     List<AutoStartInfo> isSystemAuto = null;
     List<AutoStartInfo> noSystemAuto = null;
-    private int canDisableCom;
-
 
     private Handler mHandler = new Handler() {
 
-
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case REFRESH_BT:
-                    refeshButoom();
-
-                    break;
-            }
+            refreshClearButton();
         }
     };
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
 
-        position = getArguments().getInt(ARG_POSITION);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
+        position = getArguments().getInt("position");
         View view = inflater.inflate(R.layout.fragment_auto_start, container, false);
         ButterKnife.bind(this, view);
         mContext = getActivity();
-
         return view;
     }
 
@@ -95,9 +73,8 @@ public class AutoStartFragment extends Fragment {
 
     @OnClick(R.id.disable_button)
     public void onClickDisable() {
-      RootUtil.preparezlsu(mContext);
-       disableAPP();
-
+        RootUtil.preparezlsu(mContext);
+        disableAPP();
     }
 
     private void disableAPP() {
@@ -117,14 +94,14 @@ public class AutoStartFragment extends Fragment {
 
         ShellUtils.CommandResult mCommandResult = ShellUtils.execCommand(mSring, true, true);
         if (mCommandResult.result == 0) {
-            ShowToast.show("应用已经全部禁止");
+            ShowToast.show("应用已禁止");
             for (AutoStartInfo auto : noSystemAuto) {
                 if (auto.isEnable()) {
                     auto.setEnable(false);
                 }
             }
             mAutoStartAdapter.notifyDataSetChanged();
-            refeshButoom();
+            refreshClearButton();
         } else {
             ShowToast.show("该功能需要获取系统root权限，请允许获取root权限");
         }
@@ -134,11 +111,9 @@ public class AutoStartFragment extends Fragment {
     private void fillData() {
 
         if (position == 0) {
-            topText.setText("禁止下列软件自启,可提升运行速度");
-
+            topText.setText("禁止用户软件自启,可提升运行速度");
         } else {
-            topText.setText("禁止系统核心软件自启,将会影响手机的正常使用,请谨慎操作");
-
+            topText.setText("禁止系统核心软件自启,可能影响手机的正常使用");
         }
 
         List<AutoStartInfo> mAutoStartInfo = BootStartUtils.fetchAutoApps(mContext);
@@ -149,7 +124,6 @@ public class AutoStartFragment extends Fragment {
 
         for (AutoStartInfo a : mAutoStartInfo) {
             if (a.isSystem()) {
-
                 isSystemAuto.add(a);
             } else {
                 noSystemAuto.add(a);
@@ -159,33 +133,28 @@ public class AutoStartFragment extends Fragment {
         if (position == 0) {
             mAutoStartAdapter = new AutoStartAdapter(mContext, noSystemAuto, mHandler);
             listview.setAdapter(mAutoStartAdapter);
-            refeshButoom();
+            refreshClearButton();
         } else {
-
             mAutoStartAdapter = new AutoStartAdapter(mContext, isSystemAuto, null);
             listview.setAdapter(mAutoStartAdapter);
-
         }
-
-
     }
 
-    private void refeshButoom() {
+    private void refreshClearButton() {
         if (position == 0) {
-            canDisableCom = 0;
+            int canDisableCom = 0;
             for (AutoStartInfo autoS : noSystemAuto) {
                 if (autoS.isEnable()) {
                     canDisableCom++;
                 }
             }
             if (canDisableCom > 0) {
-                bottom_lin.setVisibility(View.VISIBLE);
+                disableButton.setVisibility(View.VISIBLE);
                 disableButton.setText("可优化" + canDisableCom + "款");
             } else {
-                bottom_lin.setVisibility(View.GONE);
+                disableButton.setVisibility(View.GONE);
             }
         }
-
     }
 
     @Override
@@ -193,5 +162,4 @@ public class AutoStartFragment extends Fragment {
         super.onDestroyView();
         ButterKnife.unbind(this);
     }
-
 }

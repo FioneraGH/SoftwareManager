@@ -12,7 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fionera.cleaner.model.CacheListItem;
+import com.fionera.cleaner.bean.CacheListItem;
 import com.fionera.cleaner.R;
 
 import java.util.ArrayList;

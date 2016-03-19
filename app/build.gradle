@@ -25,4 +25,5 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.hannesdorfmann.smoothprogressbar:library:1.0.0'
     compile 'com.github.castorflex.smoothprogressbar:library-circular:1.0.0'
+    compile 'com.android.support:design:23.2.1'
 }

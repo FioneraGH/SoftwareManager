@@ -22,7 +22,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                card:card_image="@drawable/card_icon_speedup"
+                card:card_image="@drawable/ic_card_speedup"
                 card:card_name="内存加速"/>
 
         </RelativeLayout>
@@ -42,7 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                card:card_image="@drawable/card_icon_trash"
+                card:card_image="@drawable/ic_card_trash"
                 card:card_name="垃圾清理"/>
         </RelativeLayout>
     </LinearLayout>
@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                card:card_image="@drawable/card_icon_autorun"
+                card:card_image="@drawable/ic_card_autorun"
                 card:card_name="自启管理"/>
 
         </RelativeLayout>
@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                card:card_image="@drawable/card_icon_media"
+                card:card_image="@drawable/ic_card_software"
                 card:card_name="@string/app_software_manage"/>
         </RelativeLayout>
     </LinearLayout>

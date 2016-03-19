@@ -19,7 +19,7 @@ import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.fionera.cleaner.model.CacheListItem;
+import com.fionera.cleaner.bean.CacheListItem;
 import com.fionera.cleaner.R;
 
 import java.lang.reflect.InvocationTargetException;

@@ -16,20 +16,6 @@
         <attr name="arc_bottom_text_size" format="dimension" />
     </declare-styleable>
 
-    <declare-styleable name="SlidingTab">
-        <attr name="pstsIndicatorColorWe" format="color" />
-        <attr name="pstsUnderlineColorWe" format="color" />
-        <attr name="pstsDividerColorWe" format="color" />
-        <attr name="pstsIndicatorHeightWe" format="dimension" />
-        <attr name="pstsUnderlineHeightWe" format="dimension" />
-        <attr name="pstsDividerPaddingWe" format="dimension" />
-        <attr name="pstsTabPaddingLeftRightWe" format="dimension" />
-        <attr name="pstsScrollOffsetWe" format="dimension" />
-        <attr name="pstsTabBackgroundWe" format="reference" />
-        <attr name="pstsShouldExpandWe" format="boolean" />
-        <attr name="pstsTextAllCapsWe" format="boolean" />
-    </declare-styleable>
-
     <declare-styleable name="CounterView">
         <attr name="prefix" format="string" />
         <attr name="suffix" format="string" />
@@ -45,23 +31,6 @@
             <enum name="both" value="2" />
         </attr>
         <attr name="android:text" />
-    </declare-styleable>
-
-    <declare-styleable name="RippleView">
-        <attr name="rv_alpha" format="integer" />
-        <attr name="rv_framerate" format="integer" />
-        <attr name="rv_rippleDuration" format="integer" />
-        <attr name="rv_zoomDuration" format="integer" />
-        <attr name="rv_color" format="color" />
-        <attr name="rv_centered" format="boolean" />
-        <attr name="rv_type" format="enum">
-            <enum name="simpleRipple" value="0" />
-            <enum name="doubleRipple" value="1" />
-            <enum name="rectangle" value="2" />
-        </attr>
-        <attr name="rv_ripplePadding" format="dimension" />
-        <attr name="rv_zoom" format="boolean" />
-        <attr name="rv_zoomScale" format="float" />
     </declare-styleable>
 
     <declare-styleable name="SwipeBackLayout">

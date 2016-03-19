@@ -10,8 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fionera.cleaner.R;
-import com.fionera.cleaner.fragment.AutoStartFragment;
-import com.fionera.cleaner.model.AutoStartInfo;
+import com.fionera.cleaner.bean.AutoStartInfo;
 import com.fionera.cleaner.utils.ShellUtils;
 import com.fionera.cleaner.utils.ShowToast;
 
@@ -36,25 +35,22 @@ public class AutoStartAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
         return mlistAppInfo.size();
     }
 
     @Override
     public Object getItem(int position) {
-        // TODO Auto-generated method stub
         return mlistAppInfo.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (convertView == null) {
             convertView = infater.inflate(R.layout.listview_auto_start,
                     null);
@@ -77,10 +73,10 @@ public class AutoStartAdapter extends BaseAdapter {
             holder.appIcon.setImageDrawable(item.getIcon());
             holder.appName.setText(item.getLabel());
             if (item.isEnable()) {
-                holder.disable_switch.setBackgroundResource(R.drawable.switch_on);
+                holder.disable_switch.setBackgroundResource(R.drawable.ic_switch_on);
                 holder.disable_switch.setText("已开启");
             } else {
-                holder.disable_switch.setBackgroundResource(R.drawable.switch_off);
+                holder.disable_switch.setBackgroundResource(R.drawable.ic_switch_off);
                 holder.disable_switch.setText("已禁止");
             }
             // holder.size.setText(Formatter.formatShortFileSize(mContext, item.getCacheSize()));
@@ -126,7 +122,7 @@ public class AutoStartAdapter extends BaseAdapter {
             item.setEnable(false);
             notifyDataSetChanged();
             if (mHandler != null) {
-                mHandler.sendEmptyMessage(AutoStartFragment.REFRESH_BT);
+                mHandler.sendEmptyMessage(0);
             }
         } else {
             ShowToast.show(item.getLabel() + "禁止失败");
@@ -152,7 +148,7 @@ public class AutoStartAdapter extends BaseAdapter {
             item.setEnable(true);
             notifyDataSetChanged();
             if (mHandler != null) {
-                mHandler.sendEmptyMessage(AutoStartFragment.REFRESH_BT);
+                mHandler.sendEmptyMessage(0);
             }
         } else {
             ShowToast.show(item.getLabel() + "开启失败");

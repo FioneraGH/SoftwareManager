@@ -11,9 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fionera.cleaner.R;
-import com.fionera.cleaner.model.AppInfo;
+import com.fionera.cleaner.bean.AppInfo;
 import com.fionera.cleaner.utils.StorageUtil;
-import com.fionera.cleaner.views.RippleView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +64,7 @@ public class SoftwareAdapter extends BaseAdapter {
             holder.size = (TextView) convertView
                     .findViewById(R.id.app_size);
 
-            holder.ripleUninstall = (RippleView) convertView
+            holder.ripleUninstall = (TextView) convertView
                     .findViewById(R.id.riple_uninstall);
             convertView.setTag(holder);
         } else {
@@ -106,7 +105,7 @@ public class SoftwareAdapter extends BaseAdapter {
         ImageView appIcon;
         TextView appName;
         TextView size;
-        RippleView ripleUninstall;
+        TextView ripleUninstall;
         String packageName;
     }
 }

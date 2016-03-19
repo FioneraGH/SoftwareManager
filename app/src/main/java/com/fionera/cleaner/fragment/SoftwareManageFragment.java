@@ -20,7 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fionera.cleaner.adapter.SoftwareAdapter;
-import com.fionera.cleaner.model.AppInfo;
+import com.fionera.cleaner.bean.AppInfo;
 import com.fionera.cleaner.utils.StorageUtil;
 import com.fionera.cleaner.R;
 
@@ -46,7 +46,7 @@ public class SoftwareManageFragment
     ListView listview;
 
 
-    @Bind(R.id.topText)
+    @Bind(R.id.tv_top_tips)
     TextView topText;
     List<AppInfo> userAppInfos = null;
     List<AppInfo> systemAppInfos = null;

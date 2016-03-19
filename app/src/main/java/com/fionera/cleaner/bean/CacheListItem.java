@@ -1,4 +1,4 @@
-package com.fionera.cleaner.model;
+package com.fionera.cleaner.bean;
 
 import android.graphics.drawable.Drawable;
 

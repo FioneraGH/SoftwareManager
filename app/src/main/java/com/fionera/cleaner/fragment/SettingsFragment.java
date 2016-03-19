@@ -5,8 +5,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.activity.AboutActivity;
@@ -52,7 +50,7 @@ public class SettingsFragment
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "一键加速");
         intent.putExtra("duplicate", false);
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON,
-                        BitmapFactory.decodeResource(getResources(), R.drawable.short_cut_icon));
+                        BitmapFactory.decodeResource(getResources(), R.drawable.iv_short_cut_center_light));
         Intent aimIntent = new Intent();
         aimIntent.setAction("com.fionera.shortcut");
         aimIntent.addCategory("android.intent.category.DEFAULT");

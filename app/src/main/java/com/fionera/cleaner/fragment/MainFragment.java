@@ -1,5 +1,6 @@
 package com.fionera.cleaner.fragment;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,24 +10,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.fionera.cleaner.base.BaseFragment;
-import com.fionera.cleaner.model.SDCardInfo;
+import com.fionera.cleaner.bean.SDCardInfo;
 import com.fionera.cleaner.activity.AutoStartManageActivity;
 import com.fionera.cleaner.activity.MemoryCleanActivity;
 import com.fionera.cleaner.activity.RubbishCleanActivity;
 import com.fionera.cleaner.utils.AppUtil;
 import com.fionera.cleaner.utils.StorageUtil;
-import com.fionera.cleaner.widget.circleprogress.ArcProgress;
+import com.fionera.cleaner.widget.ArcProgress;
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.activity.SoftwareManageActivity;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.ButterKnife;
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class MainFragment extends BaseFragment {
+public class MainFragment
+        extends BaseFragment {
 
     @Bind(R.id.arc_home_storage)
     ArcProgress arcStore;
@@ -37,8 +36,8 @@ public class MainFragment extends BaseFragment {
 
     Context mContext;
 
-    private Timer timer;
-    private Timer timer2;
+    private ValueAnimator valueAnimator1;
+    private ValueAnimator valueAnimator2;
 
     @OnClick(R.id.card1)
     void speedUp() {
@@ -61,8 +60,8 @@ public class MainFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
         mContext = getActivity();
@@ -76,33 +75,8 @@ public class MainFragment extends BaseFragment {
     }
 
     private void fillData() {
-        timer = new Timer();
-        timer2 = new Timer();
-
-        long availMemory = AppUtil.getAvailMemory(mContext);
-        long totalMemory = AppUtil.getTotalMemory(mContext);
-        final double offset = (((totalMemory - availMemory) / (double) totalMemory) * 100);
-
-        arcProcess.setProgress(0);
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (arcProcess.getProgress() >= (int) offset) {
-                            timer.cancel();
-                        } else {
-                            arcProcess.setProgress(arcProcess.getProgress() + 1);
-                        }
-                    }
-                });
-            }
-        }, 50, 20);
-
         SDCardInfo mSDCardInfo = StorageUtil.getSDCardInfo();
         SDCardInfo mSystemInfo = StorageUtil.getSystemSpaceInfo(mContext);
-
         long availBlock;
         long TotalBlocks;
         if (mSDCardInfo != null) {
@@ -112,28 +86,51 @@ public class MainFragment extends BaseFragment {
             availBlock = mSystemInfo.free;
             TotalBlocks = mSystemInfo.total;
         }
+        final int offset = (int) Math
+                .round(((TotalBlocks - availBlock) / (double) TotalBlocks) * 100);
 
-        final double percentStore = (((TotalBlocks - availBlock) / (double) TotalBlocks) * 100);
+        arcStore.setProgress(1);
+        valueAnimator1 = ValueAnimator.ofFloat(0, offset);
+        valueAnimator1.setDuration(2000);
+        valueAnimator1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
-        capacity.setText(StorageUtil.convertStorage(TotalBlocks - availBlock) + "/" + StorageUtil.convertStorage(TotalBlocks));
-        arcStore.setProgress(0);
-
-        timer2.schedule(new TimerTask() {
             @Override
-            public void run() {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        if (arcStore.getProgress() >= (int) percentStore) {
-                            timer2.cancel();
-                        } else {
-                            arcStore.setProgress(arcStore.getProgress() + 1);
-                        }
-                    }
-                });
+            public void onAnimationUpdate(ValueAnimator animation) {
+                if (arcStore.getProgress() >= offset) {
+                    arcStore.setProgress(offset);
+                } else {
+                    arcStore.setProgress(Math.round(
+                            arcStore.getProgress() + offset * ((float) animation
+                                    .getAnimatedValue()) / animation.getDuration()));
+                }
             }
-        }, 50, 20);
+        });
+        valueAnimator1.start();
+        capacity.setText(StorageUtil.convertStorage(TotalBlocks - availBlock) + "/" + StorageUtil
+                .convertStorage(TotalBlocks));
+
+        long availMemory = AppUtil.getAvailMemory(mContext);
+        long totalMemory = AppUtil.getTotalMemory(mContext);
+        final int offset2 = (int) Math
+                .round(((totalMemory - availMemory) / (double) totalMemory) * 100);
+
+        arcProcess.setProgress(1);
+        valueAnimator2 = ValueAnimator.ofFloat(0, offset);
+        valueAnimator2.setDuration(2500);
+        valueAnimator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                if (arcProcess.getProgress() >= offset2) {
+                    arcProcess.setProgress(offset2);
+                } else {
+                    arcProcess.setProgress(Math.round(
+                            arcProcess.getProgress() + offset2 * ((float) animation
+                                    .getAnimatedValue()) / animation.getDuration()));
+                }
+            }
+        });
+        valueAnimator2.start();
     }
 
     @Override
@@ -145,7 +142,9 @@ public class MainFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        timer.cancel();
-        timer2.cancel();
+        valueAnimator1.cancel();
+        valueAnimator2.cancel();
+        valueAnimator1 = null;
+        valueAnimator2 = null;
     }
 }

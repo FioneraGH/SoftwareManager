@@ -46,7 +46,7 @@
 
     <TextView
         android:id="@+id/disable_switch"
-        android:background="@drawable/switch_on"
+        android:background="@drawable/ic_switch_on"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"

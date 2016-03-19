@@ -14,6 +14,7 @@ import java.io.InputStream;
 
 public class RootUtil {
 
+    public static final String ZLSU = "zlsu";
 
     /**
      * 调用su获取root权限再把zlsu写到system/bin目录下
@@ -23,7 +24,7 @@ public class RootUtil {
      */
     public static void preparezlsu(Context ctx) {
         try {
-            File zlsu = new File("/system/bin/" + Constants.ROOT_SU);
+            File zlsu = new File("/system/bin/" + ZLSU);
             // if (!zlsu.exists())
             // {
             // Toast toast = Toast.makeText(ctx,
@@ -72,7 +73,7 @@ public class RootUtil {
             String pkgPath = ctx.getApplicationContext()
                     .getPackageName();
             // "/data/data/com.zl.movepkgdemo/zlsu"
-            String zlsuPath = "/data/data/" + pkgPath + File.separator + Constants.ROOT_SU;
+            String zlsuPath = "/data/data/" + pkgPath + File.separator + "zlsu";
             File zlsuFileInData = new File(zlsuPath);
             if (!zlsuFileInData.exists()) {
                 System.out.println(zlsuPath + " not exist! ");
@@ -94,12 +95,12 @@ public class RootUtil {
             os.writeBytes("mount -oremount,rw /dev/block/mtdblock3 /system\n");
 //			"busybox cp /data/data/com.zl.movepkgdemo/zlsu /system/bin/zlsu \n"
             os.writeBytes("busybox cp " + zlsuPath + " /system/bin/"
-                    + Constants.ROOT_SU + "\n");
+                    + "zlsu" + "\n");
 //			"busybox chown 0:0 /system/bin/zlsu \n"
-            os.writeBytes("busybox chown 0:0 /system/bin/" + Constants.ROOT_SU
+            os.writeBytes("busybox chown 0:0 /system/bin/" + "zlsu"
                     + "\n");
 //			"chmod 4755 /system/bin/zlsu \n"
-            os.writeBytes("chmod 4755 /system/bin/" + Constants.ROOT_SU + "\n");
+            os.writeBytes("chmod 4755 /system/bin/" + "zlsu" + "\n");
             os.writeBytes("exit\n");
             os.flush();
         } catch (Exception e) {

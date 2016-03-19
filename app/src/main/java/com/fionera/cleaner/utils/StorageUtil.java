@@ -4,14 +4,13 @@ import android.content.Context;
 import android.os.Environment;
 import android.os.StatFs;
 
-import com.fionera.cleaner.model.SDCardInfo;
-import com.fionera.cleaner.model.StorageSize;
+import com.fionera.cleaner.bean.SDCardInfo;
+import com.fionera.cleaner.bean.StorageSize;
 
 import java.io.File;
 
 public class StorageUtil {
 
-    // storage, G M K B
     public static String convertStorage(long size) {
         long kb = 1024;
         long mb = kb * 1024;
@@ -58,8 +57,6 @@ public class StorageUtil {
 
             return sto;
         }
-
-
     }
 
     public static SDCardInfo getSDCardInfo() {
@@ -114,27 +111,6 @@ public class StorageUtil {
         long availSize = availableBlocks * blockSize;
         SDCardInfo info = new SDCardInfo();
         info.total = totalSize;
-        info.free = availSize;
-        return info;
-    }
-
-    public static SDCardInfo getRootSpaceInfo() {
-        File path = Environment.getRootDirectory();
-        StatFs stat = new StatFs(path.getPath());
-        long blockSize = stat.getBlockSize();
-        long totalBlocks = stat.getBlockCount();
-        long availableBlocks = stat.getAvailableBlocks();
-
-        long totalSize = blockSize * totalBlocks;
-        long availSize = availableBlocks * blockSize;
-        // 获取SDCard上每个block的SIZE
-        long nBlocSize = stat.getBlockSize();
-
-        SDCardInfo info = new SDCardInfo();
-        // 计算SDCard 总容量大小MB
-        info.total = totalSize;
-
-        // 计算 SDCard 剩余大小MB
         info.free = availSize;
         return info;
     }

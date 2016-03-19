@@ -1,5 +1,8 @@
 package com.fionera.cleaner.activity;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,6 +14,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -31,6 +35,8 @@ public class ShortCutActivity
 
     @Bind(R.id.iv_short_cut_cleaning)
     ImageView cleanLightImg;
+
+    private ObjectAnimator objectAnimator;
 
     private CoreService mCoreService;
 
@@ -54,7 +60,33 @@ public class ShortCutActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_short_cut);
 
-        cleanLightImg.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_anim));
+        objectAnimator = ObjectAnimator.ofFloat(cleanLightImg,"rotation",0,720);
+        objectAnimator.setDuration(1500);
+        objectAnimator.setInterpolator(new LinearInterpolator());
+        objectAnimator.setRepeatMode(ValueAnimator.INFINITE);
+        objectAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        objectAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                finish();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        objectAnimator.start();
         bindService(new Intent(mContext, CoreService.class), mServiceConnection,
                     Context.BIND_AUTO_CREATE);
     }
@@ -89,7 +121,7 @@ public class ShortCutActivity
                 } else {
                     ShowToast.show("您刚刚清理过内存,请稍后再试");
                 }
-                finish();
+                objectAnimator.cancel();
             }
         }, 2000);
     }

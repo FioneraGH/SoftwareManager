@@ -22,12 +22,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoreService extends Service {
-
-    public static final String ACTION_CLEAN_AND_EXIT = "com.yzy.service.cleaner.CLEAN_AND_EXIT";
+public class CoreService
+        extends Service {
 
     private static final String TAG = "CleanerService";
-
 
     private OnProcessActionListener mOnActionListener;
     private boolean mIsScanning = false;
@@ -51,7 +49,8 @@ public class CoreService extends Service {
         void onCleanCompleted(Context context, long cacheSize);
     }
 
-    public class ProcessServiceBinder extends Binder {
+    public class ProcessServiceBinder
+            extends Binder {
 
         public CoreService getService() {
             return CoreService.this;
@@ -71,10 +70,8 @@ public class CoreService extends Service {
         mContext = getApplicationContext();
 
         try {
-            activityManager = (ActivityManager)
-                    getSystemService(Context.ACTIVITY_SERVICE);
-            packageManager = getApplicationContext()
-                    .getPackageManager();
+            activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            packageManager = getApplicationContext().getPackageManager();
         } catch (Exception e) {
 
         }
@@ -87,57 +84,52 @@ public class CoreService extends Service {
         String action = intent.getAction();
 
         if (action != null) {
-            if (action.equals(ACTION_CLEAN_AND_EXIT)) {
-                setOnActionListener(new OnProcessActionListener() {
-                    @Override
-                    public void onScanStarted(Context context) {
+            setOnActionListener(new OnProcessActionListener() {
+                @Override
+                public void onScanStarted(Context context) {
 
-                    }
+                }
 
-                    @Override
-                    public void onScanProgressUpdated(Context context, int current, int max) {
+                @Override
+                public void onScanProgressUpdated(Context context, int current, int max) {
 
-                    }
+                }
 
-                    @Override
-                    public void onScanCompleted(Context context, List<AppProcessInfo> apps) {
-                        //   if (getCacheSize() > 0) {
-                        //     cleanCache();
-                        // }
-                    }
+                @Override
+                public void onScanCompleted(Context context, List<AppProcessInfo> apps) {
 
-                    @Override
-                    public void onCleanStarted(Context context) {
+                }
 
-                    }
+                @Override
+                public void onCleanStarted(Context context) {
 
-                    @Override
-                    public void onCleanCompleted(Context context, long cacheSize) {
-                        String msg = getString(R.string.cleaned, Formatter.formatShortFileSize(
-                                CoreService.this, cacheSize));
+                }
 
-                        Log.d(TAG, msg);
+                @Override
+                public void onCleanCompleted(Context context, long cacheSize) {
+                    String msg = getString(R.string.cleaned, Formatter
+                            .formatShortFileSize(CoreService.this, cacheSize));
 
-                        Toast.makeText(CoreService.this, msg, Toast.LENGTH_LONG).show();
+                    Toast.makeText(CoreService.this, msg, Toast.LENGTH_LONG).show();
 
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                stopSelf();
-                            }
-                        }, 5000);
-                    }
-                });
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            stopSelf();
+                        }
+                    }, 5000);
+                }
+            });
 
-                scanRunProcess();
-            }
+            scanRunProcess();
         }
 
         return START_NOT_STICKY;
     }
 
 
-    private class TaskScan extends AsyncTask<Void, Integer, List<AppProcessInfo>> {
+    private class TaskScan
+            extends AsyncTask<Void, Integer, List<AppProcessInfo>> {
 
         private int mAppCount = 0;
 
@@ -160,9 +152,8 @@ public class CoreService extends Service {
 
             for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessList) {
                 publishProgress(++mAppCount, appProcessList.size());
-                abAppProcessInfo = new AppProcessInfo(
-                        appProcessInfo.processName, appProcessInfo.pid,
-                        appProcessInfo.uid);
+                abAppProcessInfo = new AppProcessInfo(appProcessInfo.processName,
+                                                      appProcessInfo.pid, appProcessInfo.uid);
                 try {
                     appInfo = packageManager.getApplicationInfo(appProcessInfo.processName, 0);
 
@@ -173,8 +164,7 @@ public class CoreService extends Service {
                         abAppProcessInfo.isSystem = false;
                     }
                     Drawable icon = appInfo.loadIcon(packageManager);
-                    String appName = appInfo.loadLabel(packageManager)
-                            .toString();
+                    String appName = appInfo.loadLabel(packageManager).toString();
                     abAppProcessInfo.icon = icon;
                     abAppProcessInfo.appName = appName;
                 } catch (PackageManager.NameNotFoundException e) {
@@ -187,19 +177,23 @@ public class CoreService extends Service {
                         if (appInfo != null) {
                             Drawable icon = appInfo.loadIcon(packageManager);
                             abAppProcessInfo.icon = icon;
-                        }else{
-                            abAppProcessInfo.icon = mContext.getResources().getDrawable(R.drawable.ic_launcher);
+                        } else {
+                            abAppProcessInfo.icon = mContext.getResources()
+                                    .getDrawable(R.drawable.ic_launcher);
                         }
 
-                    }else{
-                        abAppProcessInfo.icon = mContext.getResources().getDrawable(R.drawable.ic_launcher);
+                    } else {
+                        abAppProcessInfo.icon = mContext.getResources()
+                                .getDrawable(R.drawable.ic_launcher);
                     }
                     abAppProcessInfo.isSystem = true;
                     abAppProcessInfo.appName = appProcessInfo.processName;
                 }
 
 
-                long memsize = activityManager.getProcessMemoryInfo(new int[]{appProcessInfo.pid})[0].getTotalPrivateDirty() * 1024;
+                long memsize = activityManager
+                        .getProcessMemoryInfo(new int[]{appProcessInfo.pid})[0]
+                        .getTotalPrivateDirty() * 1024;
                 abAppProcessInfo.memory = memsize;
 
                 list.add(abAppProcessInfo);
@@ -256,7 +250,8 @@ public class CoreService extends Service {
     }
 
 
-    private class TaskClean extends AsyncTask<Void, Void, Long> {
+    private class TaskClean
+            extends AsyncTask<Void, Void, Long> {
 
         @Override
         protected void onPreExecute() {
@@ -314,7 +309,7 @@ public class CoreService extends Service {
         mOnActionListener = listener;
     }
 
-    public ApplicationInfo getApplicationInfo( String processName) {
+    public ApplicationInfo getApplicationInfo(String processName) {
         if (processName == null) {
             return null;
         }

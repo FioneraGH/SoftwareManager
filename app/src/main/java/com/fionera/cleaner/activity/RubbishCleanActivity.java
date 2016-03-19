@@ -70,7 +70,6 @@ public class RubbishCleanActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
             mCleanerService = ((CleanerService.CleanerServiceBinder) service).getService();
             mCleanerService.setOnActionListener(RubbishCleanActivity.this);
-
             if (!mCleanerService.isScanning() && !mAlreadyScanned) {
                 mCleanerService.scanCache();
             }

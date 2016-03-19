@@ -28,11 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class CleanerService extends Service {
-
-    public static final String ACTION_CLEAN_AND_EXIT = "com.yzy.cache.cleaner.CLEAN_AND_EXIT";
-
-    private static final String TAG = "CleanerService";
+public class CleanerService
+        extends Service {
 
     private Method mGetPackageSizeInfoMethod, mFreeStorageAndNotifyMethod;
     private OnActionListener mOnActionListener;
@@ -40,19 +37,20 @@ public class CleanerService extends Service {
     private boolean mIsCleaning = false;
     private long mCacheSize = 0;
 
-    public static interface OnActionListener {
-        public void onScanStarted(Context context);
+    public interface OnActionListener {
+        void onScanStarted(Context context);
 
-        public void onScanProgressUpdated(Context context, int current, int max);
+        void onScanProgressUpdated(Context context, int current, int max);
 
-        public void onScanCompleted(Context context, List<CacheListItem> apps);
+        void onScanCompleted(Context context, List<CacheListItem> apps);
 
-        public void onCleanStarted(Context context);
+        void onCleanStarted(Context context);
 
-        public void onCleanCompleted(Context context, long cacheSize);
+        void onCleanCompleted(Context context, long cacheSize);
     }
 
-    public class CleanerServiceBinder extends Binder {
+    public class CleanerServiceBinder
+            extends Binder {
 
         public CleanerService getService() {
             return CleanerService.this;
@@ -61,7 +59,8 @@ public class CleanerService extends Service {
 
     private CleanerServiceBinder mBinder = new CleanerServiceBinder();
 
-    private class TaskScan extends AsyncTask<Void, Integer, List<CacheListItem>> {
+    private class TaskScan
+            extends AsyncTask<Void, Integer, List<CacheListItem>> {
 
         private int mAppCount = 0;
 
@@ -76,8 +75,8 @@ public class CleanerService extends Service {
         protected List<CacheListItem> doInBackground(Void... params) {
             mCacheSize = 0;
 
-            final List<ApplicationInfo> packages = getPackageManager().getInstalledApplications(
-                    PackageManager.GET_META_DATA);
+            final List<ApplicationInfo> packages = getPackageManager()
+                    .getInstalledApplications(PackageManager.GET_META_DATA);
 
             publishProgress(0, packages.size());
 
@@ -88,40 +87,48 @@ public class CleanerService extends Service {
             try {
                 for (ApplicationInfo pkg : packages) {
                     mGetPackageSizeInfoMethod.invoke(getPackageManager(), pkg.packageName,
-                            new IPackageStatsObserver.Stub() {
+                                                     new IPackageStatsObserver.Stub() {
 
-                                @Override
-                                public void onGetStatsCompleted(PackageStats pStats, boolean succeeded)
-                                        throws RemoteException {
-                                    synchronized (apps) {
-                                        publishProgress(++mAppCount, packages.size());
+                                                         @Override
+                                                         public void onGetStatsCompleted(
+                                                                 PackageStats pStats,
+                                                                 boolean succeeded) throws
+                                                                 RemoteException {
+                                                             synchronized (apps) {
+                                                                 publishProgress(++mAppCount,
+                                                                                 packages.size());
 
-                                        if (succeeded && pStats.cacheSize > 0) {
-                                            try {
-                                                apps.add(new CacheListItem(pStats.packageName,
-                                                        getPackageManager().getApplicationLabel(
-                                                                getPackageManager().getApplicationInfo(
-                                                                        pStats.packageName,
-                                                                        PackageManager.GET_META_DATA)
-                                                        ).toString(),
-                                                        getPackageManager().getApplicationIcon(
-                                                                pStats.packageName),
-                                                        pStats.cacheSize
-                                                ));
+                                                                 if (succeeded && pStats
+                                                                         .cacheSize > 0) {
+                                                                     try {
+                                                                         apps.add(new CacheListItem(
+                                                                                 pStats.packageName,
+                                                                                 getPackageManager()
+                                                                                         .getApplicationLabel(
+                                                                                                 getPackageManager()
+                                                                                                         .getApplicationInfo(
+                                                                                                                 pStats.packageName,
+                                                                                                                 PackageManager.GET_META_DATA))
+                                                                                         .toString(),
+                                                                                 getPackageManager()
+                                                                                         .getApplicationIcon(
+                                                                                                 pStats.packageName),
+                                                                                 pStats.cacheSize));
 
-                                                mCacheSize += pStats.cacheSize;
-                                            } catch (PackageManager.NameNotFoundException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }
+                                                                         mCacheSize += pStats
+                                                                                 .cacheSize;
+                                                                     } catch (PackageManager
+                                                                             .NameNotFoundException e) {
+                                                                         e.printStackTrace();
+                                                                     }
+                                                                 }
+                                                             }
 
-                                    synchronized (countDownLatch) {
-                                        countDownLatch.countDown();
-                                    }
-                                }
-                            }
-                    );
+                                                             synchronized (countDownLatch) {
+                                                                 countDownLatch.countDown();
+                                                             }
+                                                         }
+                                                     });
                 }
 
                 countDownLatch.await();
@@ -149,7 +156,8 @@ public class CleanerService extends Service {
         }
     }
 
-    private class TaskClean extends AsyncTask<Void, Void, Long> {
+    private class TaskClean
+            extends AsyncTask<Void, Void, Long> {
 
         @Override
         protected void onPreExecute() {
@@ -166,15 +174,17 @@ public class CleanerService extends Service {
 
             try {
                 mFreeStorageAndNotifyMethod.invoke(getPackageManager(),
-                        (long) stat.getBlockCount() * (long) stat.getBlockSize(),
-                        new IPackageDataObserver.Stub() {
-                            @Override
-                            public void onRemoveCompleted(String packageName, boolean succeeded)
-                                    throws RemoteException {
-                                countDownLatch.countDown();
-                            }
-                        }
-                );
+                                                   (long) stat.getBlockCount() * (long) stat
+                                                           .getBlockSize(),
+                                                   new IPackageDataObserver.Stub() {
+                                                       @Override
+                                                       public void onRemoveCompleted(
+                                                               String packageName,
+                                                               boolean succeeded) throws
+                                                               RemoteException {
+                                                           countDownLatch.countDown();
+                                                       }
+                                                   });
 
                 countDownLatch.await();
             } catch (InvocationTargetException | InterruptedException | IllegalAccessException e) {
@@ -204,11 +214,11 @@ public class CleanerService extends Service {
     @Override
     public void onCreate() {
         try {
-            mGetPackageSizeInfoMethod = getPackageManager().getClass().getMethod(
-                    "getPackageSizeInfo", String.class, IPackageStatsObserver.class);
+            mGetPackageSizeInfoMethod = getPackageManager().getClass()
+                    .getMethod("getPackageSizeInfo", String.class, IPackageStatsObserver.class);
 
-            mFreeStorageAndNotifyMethod = getPackageManager().getClass().getMethod(
-                    "freeStorageAndNotify", long.class, IPackageDataObserver.class);
+            mFreeStorageAndNotifyMethod = getPackageManager().getClass()
+                    .getMethod("freeStorageAndNotify", long.class, IPackageDataObserver.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -219,50 +229,46 @@ public class CleanerService extends Service {
         String action = intent.getAction();
 
         if (action != null) {
-            if (action.equals(ACTION_CLEAN_AND_EXIT)) {
-                setOnActionListener(new OnActionListener() {
-                    @Override
-                    public void onScanStarted(Context context) {
+            setOnActionListener(new OnActionListener() {
+                @Override
+                public void onScanStarted(Context context) {
 
+                }
+
+                @Override
+                public void onScanProgressUpdated(Context context, int current, int max) {
+
+                }
+
+                @Override
+                public void onScanCompleted(Context context, List<CacheListItem> apps) {
+                    if (getCacheSize() > 0) {
+                        cleanCache();
                     }
+                }
 
-                    @Override
-                    public void onScanProgressUpdated(Context context, int current, int max) {
+                @Override
+                public void onCleanStarted(Context context) {
 
-                    }
+                }
 
-                    @Override
-                    public void onScanCompleted(Context context, List<CacheListItem> apps) {
-                        if (getCacheSize() > 0) {
-                            cleanCache();
+                @Override
+                public void onCleanCompleted(Context context, long cacheSize) {
+                    String msg = getString(R.string.cleaned, Formatter
+                            .formatShortFileSize(CleanerService.this, cacheSize));
+
+                    Toast.makeText(CleanerService.this, msg, Toast.LENGTH_LONG).show();
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            stopSelf();
                         }
-                    }
+                    }, 5000);
+                }
+            });
 
-                    @Override
-                    public void onCleanStarted(Context context) {
-
-                    }
-
-                    @Override
-                    public void onCleanCompleted(Context context, long cacheSize) {
-                        String msg = getString(R.string.cleaned, Formatter.formatShortFileSize(
-                                CleanerService.this, cacheSize));
-
-                        Log.d(TAG, msg);
-
-                        Toast.makeText(CleanerService.this, msg, Toast.LENGTH_LONG).show();
-
-                        new Handler().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                stopSelf();
-                            }
-                        }, 5000);
-                    }
-                });
-
-                scanCache();
-            }
+            scanCache();
         }
 
         return START_NOT_STICKY;

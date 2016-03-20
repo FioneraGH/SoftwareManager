@@ -1,41 +1,25 @@
 package com.fionera.cleaner.utils;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
-import android.util.DisplayMetrics;
-import android.view.inputmethod.InputMethodManager;
 
-import com.fionera.cleaner.bean.AppProcessInfo;
-import com.fionera.cleaner.bean.ProcessInfo;
+import com.fionera.cleaner.bean.ProcessHelper.AndroidAppProcess;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class AppUtil {
 
@@ -93,34 +77,12 @@ public class AppUtil {
         return ret;
     }
 
-    public static void showSoftInput(Context context) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
-    }
-
-    public static void closeSoftInput(Context context) {
-        InputMethodManager inputMethodManager = (InputMethodManager) context
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (inputMethodManager != null && ((Activity) context).getCurrentFocus() != null) {
-            inputMethodManager.hideSoftInputFromWindow(
-                    ((Activity) context).getCurrentFocus().getWindowToken(),
-                    InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
-    /**
-     * 描述：kill进程.
-     *
-     * @param context
-     * @param pid
-     */
     public static void killProcesses(Context context, int pid, String processName) {
 
         String cmd = "kill -9 " + pid;
         String Command = "am force-stop " + processName + "\n";
         Process sh = null;
-        DataOutputStream os = null;
+        DataOutputStream os;
         try {
             sh = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(sh.getOutputStream());
@@ -278,7 +240,6 @@ public class AppUtil {
         DataOutputStream os = null;
         try {
             String cmd = "chmod 777 " + packageCodePath;
-            // 切换到root帐号
             process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
             os.writeBytes(cmd + "\n");
@@ -314,5 +275,37 @@ public class AppUtil {
         MemoryInfo memoryInfo = new MemoryInfo();
         activityManager.getMemoryInfo(memoryInfo);
         return memoryInfo.totalMem;
+    }
+
+    /**
+     * 因为android5.0权限组的增强
+     * @param ctx
+     * @return
+     */
+    /**
+     * @return a list of all running app processes on the device.
+     */
+    public static List<AndroidAppProcess> getRunningAppProcesses() {
+        List<AndroidAppProcess> processes = new ArrayList<>();
+        File[] files = new File("/proc").listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                int pid;
+                try {
+                    pid = Integer.parseInt(file.getName());
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+                try {
+                    processes.add(new AndroidAppProcess(pid));
+                } catch (AndroidAppProcess.NotAndroidAppProcessException ignored) {
+                } catch (IOException e) {
+                    // System apps will not be readable on Android 5.0+ if SELinux is enforcing.
+                    // You will need root access or an elevated SELinux context to read all files under /proc.
+                    ShowToast.show("关闭SELinux或获取Root权限");
+                }
+            }
+        }
+        return processes;
     }
 }

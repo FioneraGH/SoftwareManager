@@ -10,7 +10,6 @@ public class AutoStartInfo {
 
     private String packageReceiver;
     private String desc;
-    /**  是否是系统进程. */
     public boolean isSystem;
     public boolean isEnable;
 

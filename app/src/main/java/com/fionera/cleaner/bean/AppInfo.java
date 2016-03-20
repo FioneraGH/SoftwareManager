@@ -9,9 +9,7 @@ public class AppInfo {
 	private String version;
     private long pkgSize;
 	private int uid;
-	
-	
-	
+
 	public int getUid() {
 		return uid;
 	}
@@ -27,11 +25,6 @@ public class AppInfo {
     public void setPkgSize(long pkgSize) {
         this.pkgSize = pkgSize;
     }
-
-    /**
-	 * 应用程序可以被安装到不同的位置 , 手机内存 外部存储sd卡
-	 */
-
 
 	private boolean inRom;
 	
@@ -84,7 +77,5 @@ public class AppInfo {
 	public void setUserApp(boolean userApp) {
 		this.userApp = userApp;
 	}
-	
-	
-	
+
 }

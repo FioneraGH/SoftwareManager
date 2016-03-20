@@ -19,8 +19,8 @@ import android.widget.TextView;
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.adapter.RubbishMemoryAdapter;
 import com.fionera.cleaner.base.BaseSwipeBackActivity;
-import com.fionera.cleaner.bean.CacheListItem;
-import com.fionera.cleaner.bean.StorageSize;
+import com.fionera.cleaner.bean.CacheInfo;
+import com.fionera.cleaner.bean.StorageSizeInfo;
 import com.fionera.cleaner.service.CleanerService;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
@@ -42,7 +42,7 @@ public class RubbishCleanActivity
 
     @Bind(R.id.listview)
     ListView mListView;
-    List<CacheListItem> mCacheListItem = new ArrayList<>();
+    List<CacheInfo> mCacheInfo = new ArrayList<>();
     RubbishMemoryAdapter rubbishMemoryAdapter;
 
     @Bind(R.id.rl_header)
@@ -94,7 +94,7 @@ public class RubbishCleanActivity
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        rubbishMemoryAdapter = new RubbishMemoryAdapter(mContext, mCacheListItem);
+        rubbishMemoryAdapter = new RubbishMemoryAdapter(mContext, mCacheInfo);
         mListView.setAdapter(rubbishMemoryAdapter);
         mListView.setOnItemClickListener(rubbishMemoryAdapter);
         bindService(new Intent(mContext, CleanerService.class), mServiceConnection,
@@ -113,10 +113,10 @@ public class RubbishCleanActivity
     }
 
     @Override
-    public void onScanCompleted(Context context, List<CacheListItem> apps) {
+    public void onScanCompleted(Context context, List<CacheInfo> apps) {
         showProgressBar(false);
-        mCacheListItem.clear();
-        mCacheListItem.addAll(apps);
+        mCacheInfo.clear();
+        mCacheInfo.addAll(apps);
         rubbishMemoryAdapter.notifyDataSetChanged();
         header.setVisibility(View.GONE);
         if (apps.size() > 0) {
@@ -125,9 +125,9 @@ public class RubbishCleanActivity
 
             long medMemory = mCleanerService != null ? mCleanerService.getCacheSize() : 0;
 
-            StorageSize mStorageSize = StorageUtil.convertStorageSize(medMemory);
-            suffix.setText(mStorageSize.suffix);
-            textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSize.value));
+            StorageSizeInfo mStorageSizeInfo = StorageUtil.convertStorageSize(medMemory);
+            suffix.setText(mStorageSizeInfo.suffix);
+            textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSizeInfo.value));
         } else {
             header.setVisibility(View.GONE);
             btnClear.setVisibility(View.GONE);
@@ -156,7 +156,7 @@ public class RubbishCleanActivity
                                          Formatter.formatShortFileSize(mContext, cacheSize)));
         header.setVisibility(View.GONE);
         btnClear.setVisibility(View.GONE);
-        mCacheListItem.clear();
+        mCacheInfo.clear();
         rubbishMemoryAdapter.notifyDataSetChanged();
     }
 

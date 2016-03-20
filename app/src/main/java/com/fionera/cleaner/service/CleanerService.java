@@ -16,10 +16,9 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StatFs;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.fionera.cleaner.bean.CacheListItem;
+import com.fionera.cleaner.bean.CacheInfo;
 import com.fionera.cleaner.R;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +41,7 @@ public class CleanerService
 
         void onScanProgressUpdated(Context context, int current, int max);
 
-        void onScanCompleted(Context context, List<CacheListItem> apps);
+        void onScanCompleted(Context context, List<CacheInfo> apps);
 
         void onCleanStarted(Context context);
 
@@ -60,7 +59,7 @@ public class CleanerService
     private CleanerServiceBinder mBinder = new CleanerServiceBinder();
 
     private class TaskScan
-            extends AsyncTask<Void, Integer, List<CacheListItem>> {
+            extends AsyncTask<Void, Integer, List<CacheInfo>> {
 
         private int mAppCount = 0;
 
@@ -72,7 +71,7 @@ public class CleanerService
         }
 
         @Override
-        protected List<CacheListItem> doInBackground(Void... params) {
+        protected List<CacheInfo> doInBackground(Void... params) {
             mCacheSize = 0;
 
             final List<ApplicationInfo> packages = getPackageManager()
@@ -82,7 +81,7 @@ public class CleanerService
 
             final CountDownLatch countDownLatch = new CountDownLatch(packages.size());
 
-            final List<CacheListItem> apps = new ArrayList<CacheListItem>();
+            final List<CacheInfo> apps = new ArrayList<CacheInfo>();
 
             try {
                 for (ApplicationInfo pkg : packages) {
@@ -101,7 +100,7 @@ public class CleanerService
                                                                  if (succeeded && pStats
                                                                          .cacheSize > 0) {
                                                                      try {
-                                                                         apps.add(new CacheListItem(
+                                                                         apps.add(new CacheInfo(
                                                                                  pStats.packageName,
                                                                                  getPackageManager()
                                                                                          .getApplicationLabel(
@@ -147,7 +146,7 @@ public class CleanerService
         }
 
         @Override
-        protected void onPostExecute(List<CacheListItem> result) {
+        protected void onPostExecute(List<CacheInfo> result) {
             if (mOnActionListener != null) {
                 mOnActionListener.onScanCompleted(CleanerService.this, result);
             }
@@ -241,7 +240,7 @@ public class CleanerService
                 }
 
                 @Override
-                public void onScanCompleted(Context context, List<CacheListItem> apps) {
+                public void onScanCompleted(Context context, List<CacheInfo> apps) {
                     if (getCacheSize() > 0) {
                         cleanCache();
                     }

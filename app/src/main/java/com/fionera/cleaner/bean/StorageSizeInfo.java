@@ -1,6 +1,6 @@
 package com.fionera.cleaner.bean;
 
-public class StorageSize {
+public class StorageSizeInfo {
     public float value;
     public String suffix;
 }

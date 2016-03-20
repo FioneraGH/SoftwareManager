@@ -12,7 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.fionera.cleaner.bean.CacheListItem;
+import com.fionera.cleaner.bean.CacheInfo;
 import com.fionera.cleaner.R;
 
 import java.util.ArrayList;
@@ -21,12 +21,12 @@ import java.util.List;
 public class RubbishMemoryAdapter
         extends BaseAdapter implements AdapterView.OnItemClickListener {
 
-    public List<CacheListItem> mlistAppInfo;
+    public List<CacheInfo> mlistAppInfo;
     LayoutInflater infater = null;
     private Context mContext;
     public static List<Integer> clearIds;
 
-    public RubbishMemoryAdapter(Context context, List<CacheListItem> apps) {
+    public RubbishMemoryAdapter(Context context, List<CacheInfo> apps) {
         infater = LayoutInflater.from(context);
         mContext = context;
         clearIds = new ArrayList<>();
@@ -65,7 +65,7 @@ public class RubbishMemoryAdapter
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        final CacheListItem item = (CacheListItem) getItem(position);
+        final CacheInfo item = (CacheInfo) getItem(position);
         if (item != null) {
             holder.appIcon.setImageDrawable(item.getApplicationIcon());
             holder.appName.setText(item.getApplicationName());

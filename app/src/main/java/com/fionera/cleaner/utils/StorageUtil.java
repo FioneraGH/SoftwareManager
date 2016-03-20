@@ -5,7 +5,7 @@ import android.os.Environment;
 import android.os.StatFs;
 
 import com.fionera.cleaner.bean.SDCardInfo;
-import com.fionera.cleaner.bean.StorageSize;
+import com.fionera.cleaner.bean.StorageSizeInfo;
 
 import java.io.File;
 
@@ -28,11 +28,11 @@ public class StorageUtil {
             return String.format("%d B", size);
     }
 
-    public static StorageSize convertStorageSize(long size) {
+    public static StorageSizeInfo convertStorageSize(long size) {
         long kb = 1024;
         long mb = kb * 1024;
         long gb = mb * 1024;
-        StorageSize sto = new StorageSize();
+        StorageSizeInfo sto = new StorageSizeInfo();
         if (size >= gb) {
 
             sto.suffix = "GB";

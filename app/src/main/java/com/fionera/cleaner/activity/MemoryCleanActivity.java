@@ -20,7 +20,7 @@ import com.fionera.cleaner.R;
 import com.fionera.cleaner.adapter.ClearMemoryAdapter;
 import com.fionera.cleaner.base.BaseSwipeBackActivity;
 import com.fionera.cleaner.bean.AppProcessInfo;
-import com.fionera.cleaner.bean.StorageSize;
+import com.fionera.cleaner.bean.StorageSizeInfo;
 import com.fionera.cleaner.service.CoreService;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
@@ -164,9 +164,9 @@ public class MemoryCleanActivity
     }
 
     private void refreshTextCounter() {
-        StorageSize mStorageSize = StorageUtil.convertStorageSize(allMemory);
-        tvPostFix.setText(mStorageSize.suffix);
-        textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSize.value));
+        StorageSizeInfo mStorageSizeInfo = StorageUtil.convertStorageSize(allMemory);
+        tvPostFix.setText(mStorageSizeInfo.suffix);
+        textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSizeInfo.value));
     }
 
     private void showProgressBar(boolean show) {

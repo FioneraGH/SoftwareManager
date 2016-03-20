@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.fionera.cleaner.bean.AppProcessInfo;
 import com.fionera.cleaner.R;
+import com.fionera.cleaner.utils.AppUtil;
 import com.fionera.cleaner.utils.LogCat;
 
 import java.lang.reflect.Method;
@@ -100,6 +101,7 @@ public class CoreService
             List<ActivityManager.RunningAppProcessInfo> appProcessList = activityManager
                     .getRunningAppProcesses();
             publishProgress(0, appProcessList.size());
+            LogCat.d(appProcessList.size() + " " + AppUtil.getRunningAppProcesses().size());
 
             for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : appProcessList) {
                 publishProgress(++mAppCount, appProcessList.size());

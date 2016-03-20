@@ -11,12 +11,14 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.ContextCompat;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.fionera.cleaner.bean.AppProcessInfo;
 import com.fionera.cleaner.R;
+import com.fionera.cleaner.utils.LogCat;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,17 +27,15 @@ import java.util.List;
 public class CoreService
         extends Service {
 
-    private static final String TAG = "CleanerService";
-
     private OnProcessActionListener mOnActionListener;
-    private boolean mIsScanning = false;
-    private boolean mIsCleaning = false;
 
-    ActivityManager activityManager = null;
-    List<AppProcessInfo> list = null;
-    PackageManager packageManager = null;
-    Context mContext;
+    public void setOnActionListener(OnProcessActionListener listener) {
+        mOnActionListener = listener;
+    }
 
+    private ActivityManager activityManager = null;
+    private PackageManager packageManager = null;
+    private Context mContext;
 
     public interface OnProcessActionListener {
         void onScanStarted(Context context);
@@ -49,9 +49,24 @@ public class CoreService
         void onCleanCompleted(Context context, long cacheSize);
     }
 
+    @Override
+    public void onCreate() {
+        mContext = getApplicationContext();
+        try {
+            activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            packageManager = mContext.getPackageManager();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return START_NOT_STICKY;
+    }
+
     public class ProcessServiceBinder
             extends Binder {
-
         public CoreService getService() {
             return CoreService.this;
         }
@@ -59,72 +74,9 @@ public class CoreService
 
     private ProcessServiceBinder mBinder = new ProcessServiceBinder();
 
-
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
-    }
-
-    @Override
-    public void onCreate() {
-        mContext = getApplicationContext();
-
-        try {
-            activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-            packageManager = getApplicationContext().getPackageManager();
-        } catch (Exception e) {
-
-        }
-
-
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        String action = intent.getAction();
-
-        if (action != null) {
-            setOnActionListener(new OnProcessActionListener() {
-                @Override
-                public void onScanStarted(Context context) {
-
-                }
-
-                @Override
-                public void onScanProgressUpdated(Context context, int current, int max) {
-
-                }
-
-                @Override
-                public void onScanCompleted(Context context, List<AppProcessInfo> apps) {
-
-                }
-
-                @Override
-                public void onCleanStarted(Context context) {
-
-                }
-
-                @Override
-                public void onCleanCompleted(Context context, long cacheSize) {
-                    String msg = getString(R.string.cleaned, Formatter
-                            .formatShortFileSize(CoreService.this, cacheSize));
-
-                    Toast.makeText(CoreService.this, msg, Toast.LENGTH_LONG).show();
-
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            stopSelf();
-                        }
-                    }, 5000);
-                }
-            });
-
-            scanRunProcess();
-        }
-
-        return START_NOT_STICKY;
     }
 
 
@@ -142,65 +94,50 @@ public class CoreService
 
         @Override
         protected List<AppProcessInfo> doInBackground(Void... params) {
-            list = new ArrayList<>();
-            ApplicationInfo appInfo = null;
-            AppProcessInfo abAppProcessInfo = null;
+            List<AppProcessInfo> appProcessInfoArrayList = new ArrayList<>();
+            AppProcessInfo appProcessInfo;
 
             List<ActivityManager.RunningAppProcessInfo> appProcessList = activityManager
                     .getRunningAppProcesses();
             publishProgress(0, appProcessList.size());
 
-            for (ActivityManager.RunningAppProcessInfo appProcessInfo : appProcessList) {
+            for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : appProcessList) {
                 publishProgress(++mAppCount, appProcessList.size());
-                abAppProcessInfo = new AppProcessInfo(appProcessInfo.processName,
-                                                      appProcessInfo.pid, appProcessInfo.uid);
+                appProcessInfo = new AppProcessInfo(runningAppProcessInfo.processName,
+                                                    runningAppProcessInfo.pid,
+                                                    runningAppProcessInfo.uid);
                 try {
-                    appInfo = packageManager.getApplicationInfo(appProcessInfo.processName, 0);
-
-
-                    if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-                        abAppProcessInfo.isSystem = true;
+                    ApplicationInfo appInfo;
+                    if (runningAppProcessInfo.processName.contains(":")) {
+                        appInfo = getApplicationInfo(
+                                runningAppProcessInfo.processName.split(":")[0]);
                     } else {
-                        abAppProcessInfo.isSystem = false;
+                        appInfo = packageManager
+                                .getApplicationInfo(runningAppProcessInfo.processName, 0);
                     }
-                    Drawable icon = appInfo.loadIcon(packageManager);
-                    String appName = appInfo.loadLabel(packageManager).toString();
-                    abAppProcessInfo.icon = icon;
-                    abAppProcessInfo.appName = appName;
+                    if (appInfo != null) {
+                        appProcessInfo.isSystem = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM)
+                                != 0;
+
+                        appProcessInfo.icon = appInfo.loadIcon(packageManager);
+                        appProcessInfo.appName = appInfo.loadLabel(packageManager).toString();
+                    } else {
+                        appProcessInfo.isSystem = true;
+                        appProcessInfo.icon = ContextCompat
+                                .getDrawable(mContext, R.drawable.ic_launcher);
+                        appProcessInfo.appName = runningAppProcessInfo.processName;
+                    }
                 } catch (PackageManager.NameNotFoundException e) {
-                    //   e.printStackTrace();
-
-                    // :服务的命名
-
-                    if (appProcessInfo.processName.indexOf(":") != -1) {
-                        appInfo = getApplicationInfo(appProcessInfo.processName.split(":")[0]);
-                        if (appInfo != null) {
-                            Drawable icon = appInfo.loadIcon(packageManager);
-                            abAppProcessInfo.icon = icon;
-                        } else {
-                            abAppProcessInfo.icon = mContext.getResources()
-                                    .getDrawable(R.drawable.ic_launcher);
-                        }
-
-                    } else {
-                        abAppProcessInfo.icon = mContext.getResources()
-                                .getDrawable(R.drawable.ic_launcher);
-                    }
-                    abAppProcessInfo.isSystem = true;
-                    abAppProcessInfo.appName = appProcessInfo.processName;
+                    e.printStackTrace();
                 }
 
+                appProcessInfo.memory = (long) (activityManager
+                        .getProcessMemoryInfo(new int[]{runningAppProcessInfo.pid})[0]
+                        .getTotalPrivateDirty() << 10);
 
-                long memsize = activityManager
-                        .getProcessMemoryInfo(new int[]{appProcessInfo.pid})[0]
-                        .getTotalPrivateDirty() * 1024;
-                abAppProcessInfo.memory = memsize;
-
-                list.add(abAppProcessInfo);
+                appProcessInfoArrayList.add(appProcessInfo);
             }
-
-
-            return list;
+            return appProcessInfoArrayList;
         }
 
         @Override
@@ -215,8 +152,6 @@ public class CoreService
             if (mOnActionListener != null) {
                 mOnActionListener.onScanCompleted(CoreService.this, result);
             }
-
-            mIsScanning = false;
         }
     }
 
@@ -226,11 +161,10 @@ public class CoreService
 
 
     public void killBackgroundProcesses(String processName) {
-        // mIsScanning = true;
 
-        String packageName = null;
+        String packageName;
         try {
-            if (processName.indexOf(":") == -1) {
+            if (!processName.contains(":")) {
                 packageName = processName;
             } else {
                 packageName = processName.split(":")[0];
@@ -238,7 +172,6 @@ public class CoreService
 
             activityManager.killBackgroundProcesses(packageName);
 
-            //
             Method forceStopPackage = activityManager.getClass()
                     .getDeclaredMethod("forceStopPackage", String.class);
             forceStopPackage.setAccessible(true);
@@ -262,8 +195,8 @@ public class CoreService
 
         @Override
         protected Long doInBackground(Void... params) {
-            long beforeMemory = 0;
-            long endMemory = 0;
+            long beforeMemory;
+            long endMemory;
             ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
             activityManager.getMemoryInfo(memoryInfo);
             beforeMemory = memoryInfo.availMem;
@@ -279,34 +212,14 @@ public class CoreService
 
         @Override
         protected void onPostExecute(Long result) {
-
-
             if (mOnActionListener != null) {
                 mOnActionListener.onCleanCompleted(CoreService.this, result);
             }
-
-
         }
     }
 
-
-    public long getAvailMemory(Context context) {
-        // 获取android当前可用内存大小
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-        // 当前系统可用内存 ,将获得的内存大小规格化
-
-        return memoryInfo.availMem;
-    }
-
     public void cleanAllProcess() {
-        //  mIsCleaning = true;
-
         new TaskClean().execute();
-    }
-
-    public void setOnActionListener(OnProcessActionListener listener) {
-        mOnActionListener = listener;
     }
 
     public ApplicationInfo getApplicationInfo(String processName) {
@@ -314,7 +227,7 @@ public class CoreService
             return null;
         }
         List<ApplicationInfo> appList = packageManager
-                .getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
+                .getInstalledApplications(PackageManager.GET_META_DATA);
         for (ApplicationInfo appInfo : appList) {
             if (processName.equals(appInfo.processName)) {
                 return appInfo;
@@ -322,14 +235,4 @@ public class CoreService
         }
         return null;
     }
-
-    public boolean isScanning() {
-        return mIsScanning;
-    }
-
-    public boolean isCleaning() {
-        return mIsCleaning;
-    }
-
-
 }

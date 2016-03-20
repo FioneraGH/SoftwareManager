@@ -1,7 +1,6 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:counter="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -31,15 +30,14 @@
                 android:background="@color/blue"
                 android:visibility="gone">
 
-                <com.fionera.cleaner.widget.textcounter.CounterView
+                <TextView
                     android:id="@+id/tc_counter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:text="250"
                     android:textColor="@color/white"
-                    android:textSize="48sp"
-                    counter:autoStart="false"/>
+                    android:textSize="48sp"/>
 
                 <TextView
                     android:id="@+id/tv_postfix"

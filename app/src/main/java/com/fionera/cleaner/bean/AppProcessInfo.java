@@ -1,31 +1,10 @@
-/*
- * Copyright (C) 2012 www.amsoft.cn
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.fionera.cleaner.bean;
 
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 
-
-// TODO: Auto-generated Javadoc
-
-/**
- * @author
- * @version v1.0
- * @date：2013-11-13 上午9:00:52
- */
-public class AppProcessInfo implements Comparable<AppProcessInfo> {
+public class AppProcessInfo
+        implements Comparable<AppProcessInfo> {
 
     /**
      * The app name.
@@ -73,27 +52,13 @@ public class AppProcessInfo implements Comparable<AppProcessInfo> {
     public String threadsCount;
 
 
-    public boolean checked=true;
+    public boolean checked = true;
 
     /**
      * 是否是系统进程.
      */
     public boolean isSystem;
 
-    /**
-     * Instantiates a new ab process info.
-     */
-    public AppProcessInfo() {
-        super();
-    }
-
-    /**
-     * Instantiates a new ab process info.
-     *
-     * @param processName the process name
-     * @param pid         the pid
-     * @param uid         the uid
-     */
     public AppProcessInfo(String processName, int pid, int uid) {
         super();
         this.processName = processName;
@@ -101,11 +66,8 @@ public class AppProcessInfo implements Comparable<AppProcessInfo> {
         this.uid = uid;
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
-    public int compareTo(AppProcessInfo another) {
+    public int compareTo(@NonNull AppProcessInfo another) {
         if (this.processName.compareTo(another.processName) == 0) {
             if (this.memory < another.memory) {
                 return 1;

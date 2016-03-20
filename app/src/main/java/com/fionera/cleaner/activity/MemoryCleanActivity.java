@@ -24,16 +24,16 @@ import com.fionera.cleaner.bean.StorageSize;
 import com.fionera.cleaner.service.CoreService;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
-import com.fionera.cleaner.widget.textcounter.CounterView;
-import com.fionera.cleaner.widget.textcounter.formatters.DecimalFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 
-public class MemoryCleanActivity extends BaseSwipeBackActivity
+public class MemoryCleanActivity
+        extends BaseSwipeBackActivity
         implements CoreService.OnProcessActionListener {
 
     @Bind(R.id.toolbar)
@@ -42,7 +42,7 @@ public class MemoryCleanActivity extends BaseSwipeBackActivity
     @Bind(R.id.rl_header)
     RelativeLayout header;
     @Bind(R.id.tc_counter)
-    CounterView textCounter;
+    TextView textCounter;
     @Bind(R.id.tv_postfix)
     TextView tvPostFix;
 
@@ -86,21 +86,15 @@ public class MemoryCleanActivity extends BaseSwipeBackActivity
         setSupportActionBar(toolbar);
 
         ActionBar ab = getSupportActionBar();
-        if(ab != null){
+        if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
         mClearMemoryAdapter = new ClearMemoryAdapter(mContext, mAppProcessInfos);
         mListView.setAdapter(mClearMemoryAdapter);
 
-        bindService(new Intent(mContext, CoreService.class),
-                mServiceConnection, Context.BIND_AUTO_CREATE);
-
-        textCounter.setAutoFormat(false);
-        textCounter.setAutoStart(false);
-        textCounter.setFormatter(new DecimalFormatter());
-        textCounter.setIncrement(5f);
-        textCounter.setTimeInterval(50);
+        bindService(new Intent(mContext, CoreService.class), mServiceConnection,
+                    Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -154,36 +148,33 @@ public class MemoryCleanActivity extends BaseSwipeBackActivity
     @OnClick(R.id.btn_clear)
     public void onClickClear() {
         long killAppMemory = 0;
-
         for (int i = mAppProcessInfos.size() - 1; i >= 0; i--) {
             if (mAppProcessInfos.get(i).checked) {
                 killAppMemory += mAppProcessInfos.get(i).memory;
                 mCoreService.killBackgroundProcesses(mAppProcessInfos.get(i).processName);
                 mAppProcessInfos.remove(mAppProcessInfos.get(i));
-                mClearMemoryAdapter.notifyDataSetChanged();
             }
         }
+        mClearMemoryAdapter.notifyDataSetChanged();
         allMemory = allMemory - killAppMemory;
         ShowToast.show("共清理" + StorageUtil.convertStorage(killAppMemory) + "内存");
-        if (allMemory > 0) {
+        if (allMemory >= 0) {
             refreshTextCounter();
         }
     }
 
     private void refreshTextCounter() {
         StorageSize mStorageSize = StorageUtil.convertStorageSize(allMemory);
-        textCounter.setStartValue(0f);
-        textCounter.setEndValue(mStorageSize.value);
         tvPostFix.setText(mStorageSize.suffix);
-        textCounter.start();
+        textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSize.value));
     }
 
     private void showProgressBar(boolean show) {
         if (show) {
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
-            mProgressBar.startAnimation(AnimationUtils.loadAnimation(
-                    mContext, android.R.anim.fade_out));
+            mProgressBar.startAnimation(
+                    AnimationUtils.loadAnimation(mContext, android.R.anim.fade_out));
             mProgressBar.setVisibility(View.GONE);
         }
     }

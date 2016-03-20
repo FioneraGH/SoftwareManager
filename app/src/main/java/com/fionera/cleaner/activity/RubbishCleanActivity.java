@@ -24,11 +24,10 @@ import com.fionera.cleaner.bean.StorageSize;
 import com.fionera.cleaner.service.CleanerService;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
-import com.fionera.cleaner.widget.textcounter.CounterView;
-import com.fionera.cleaner.widget.textcounter.formatters.DecimalFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -49,7 +48,7 @@ public class RubbishCleanActivity
     @Bind(R.id.rl_header)
     RelativeLayout header;
     @Bind(R.id.tc_counter)
-    CounterView textCounter;
+    TextView textCounter;
     @Bind(R.id.tv_postfix)
     TextView suffix;
 
@@ -91,7 +90,7 @@ public class RubbishCleanActivity
         setSupportActionBar(toolbar);
 
         android.support.v7.app.ActionBar ab = getSupportActionBar();
-        if(ab != null){
+        if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -127,15 +126,8 @@ public class RubbishCleanActivity
             long medMemory = mCleanerService != null ? mCleanerService.getCacheSize() : 0;
 
             StorageSize mStorageSize = StorageUtil.convertStorageSize(medMemory);
-            textCounter.setAutoFormat(false);
-            textCounter.setAutoStart(false);
-            textCounter.setFormatter(new DecimalFormatter());
-            textCounter.setStartValue(0f);
-            textCounter.setEndValue(mStorageSize.value);
-            textCounter.setIncrement(5f);
-            textCounter.setTimeInterval(50);
             suffix.setText(mStorageSize.suffix);
-            textCounter.start();
+            textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSize.value));
         } else {
             header.setVisibility(View.GONE);
             btnClear.setVisibility(View.GONE);

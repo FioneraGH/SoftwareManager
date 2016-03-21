@@ -111,6 +111,7 @@ public class MemoryCleanActivity
     @Override
     public void onScanCompleted(Context context, List<AppProcessInfo> apps) {
         mAppProcessInfos.clear();
+        ShowToast.show("为确保稳定性，已过滤掉系统进程");
 
         allMemory = 0;
         for (AppProcessInfo appInfo : apps) {
@@ -151,7 +152,7 @@ public class MemoryCleanActivity
         for (int i = mAppProcessInfos.size() - 1; i >= 0; i--) {
             if (mAppProcessInfos.get(i).checked) {
                 killAppMemory += mAppProcessInfos.get(i).memory;
-                mCoreService.killBackgroundProcesses(mAppProcessInfos.get(i).processName);
+                mCoreService.killBackgroundProcess(mAppProcessInfos.get(i));
                 mAppProcessInfos.remove(mAppProcessInfos.get(i));
             }
         }

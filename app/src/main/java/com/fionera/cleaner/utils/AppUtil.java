@@ -77,11 +77,11 @@ public class AppUtil {
         return ret;
     }
 
-    public static void killProcesses(Context context, int pid, String processName) {
-
+    public static void killProcesses(int pid, String processName) {
+        LogCat.d(processName);
+        String Command = "am force-stop " + processName;
         String cmd = "kill -9 " + pid;
-        String Command = "am force-stop " + processName + "\n";
-        Process sh = null;
+        Process sh;
         DataOutputStream os;
         try {
             sh = Runtime.getRuntime().exec("su");
@@ -90,39 +90,10 @@ public class AppUtil {
             os.writeBytes(cmd + "\n");
             os.writeBytes("exit\n");
             os.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
             sh.waitFor();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        LogCat.d(processName);
-        ActivityManager activityManager = (ActivityManager) context
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        String packageName = null;
-        try {
-            if (processName.indexOf(":") == -1) {
-                packageName = processName;
-            } else {
-                packageName = processName.split(":")[0];
-            }
-
-            activityManager.killBackgroundProcesses(packageName);
-
-            //
-            Method forceStopPackage = activityManager.getClass()
-                    .getDeclaredMethod("forceStopPackage", String.class);
-            forceStopPackage.setAccessible(true);
-            forceStopPackage.invoke(activityManager, packageName);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -301,7 +272,8 @@ public class AppUtil {
                 } catch (AndroidAppProcess.NotAndroidAppProcessException ignored) {
                 } catch (IOException e) {
                     // System apps will not be readable on Android 5.0+ if SELinux is enforcing.
-                    // You will need root access or an elevated SELinux context to read all files under /proc.
+                    // You will need root access or an elevated SELinux context to read all files
+                    // under /proc.
                     ShowToast.show("关闭SELinux或获取Root权限");
                 }
             }

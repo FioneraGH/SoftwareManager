@@ -1,77 +1,65 @@
 package com.fionera.cleaner.adapter;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.fionera.cleaner.bean.AppProcessInfo;
 import com.fionera.cleaner.utils.StorageUtil;
 import com.fionera.cleaner.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ClearMemoryAdapter extends BaseAdapter {
+public class ClearMemoryAdapter
+        extends BaseAdapter {
 
-    public List<AppProcessInfo> mlistAppInfo;
-    LayoutInflater infater = null;
-    private Context mContext;
-    public static List<Integer> clearIds;
+    private List<AppProcessInfo> mListAppInfo;
+    private LayoutInflater inflater = null;
 
     public ClearMemoryAdapter(Context context, List<AppProcessInfo> apps) {
-        infater = LayoutInflater.from(context);
-        mContext = context;
-        clearIds = new ArrayList<Integer>();
-        this.mlistAppInfo = apps;
+        this.inflater = LayoutInflater.from(context);
+        this.mListAppInfo = apps;
     }
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
-        return mlistAppInfo.size();
+        return mListAppInfo.size();
     }
 
     @Override
     public Object getItem(int position) {
-        // TODO Auto-generated method stub
-        return mlistAppInfo.get(position);
+        return mListAppInfo.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (convertView == null) {
-            convertView = infater.inflate(R.layout.listview_memory_clean,
-                    null);
+            convertView = inflater.inflate(R.layout.listview_memory_clean, parent, false);
             holder = new ViewHolder();
-            holder.appIcon = (ImageView) convertView
-                    .findViewById(R.id.iv_splash);
-            holder.appName = (TextView) convertView
-                    .findViewById(R.id.name);
-            holder.memory = (TextView) convertView
-                    .findViewById(R.id.memory);
+            holder.appIcon = (ImageView) convertView.findViewById(R.id.iv_splash);
+            holder.appName = (TextView) convertView.findViewById(R.id.name);
+            holder.memory = (TextView) convertView.findViewById(R.id.memory);
 
-            holder.cb = (RadioButton) convertView
-                    .findViewById(R.id.choice_radio);
+            holder.cb = (AppCompatCheckBox) convertView.findViewById(R.id.cb_checked);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         final AppProcessInfo appInfo = (AppProcessInfo) getItem(position);
         holder.appIcon.setImageDrawable(appInfo.icon);
-        holder.appName.setText(appInfo.appName);
+        holder.appName.setText(appInfo.appName + "\n" + appInfo.processName);
         holder.memory.setText(StorageUtil.convertStorage(appInfo.memory));
         if (appInfo.checked) {
             holder.cb.setChecked(true);
@@ -81,11 +69,7 @@ public class ClearMemoryAdapter extends BaseAdapter {
         holder.cb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (appInfo.checked) {
-                    appInfo.checked = false;
-                } else {
-                    appInfo.checked = true;
-                }
+                appInfo.checked = !appInfo.checked;
                 notifyDataSetChanged();
             }
         });
@@ -97,17 +81,7 @@ public class ClearMemoryAdapter extends BaseAdapter {
         ImageView appIcon;
         TextView appName;
         TextView memory;
-        TextView tvProcessMemSize;
-        RelativeLayout cb_rl;
-        RadioButton cb;
-
-        public RadioButton getCb() {
-            return cb;
-        }
-
-        public void setCb(RadioButton cb) {
-            this.cb = cb;
-        }
+        AppCompatCheckBox cb;
     }
 
 }

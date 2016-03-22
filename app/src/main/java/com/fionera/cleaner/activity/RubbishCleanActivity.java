@@ -60,7 +60,7 @@ public class RubbishCleanActivity
     @Bind(R.id.btn_clear)
     Button btnClear;
 
-    private boolean mAlreadyScanned = false;
+    private boolean mReadyScanned = false;
 
     private CleanerService mCleanerService;
 
@@ -69,7 +69,7 @@ public class RubbishCleanActivity
         public void onServiceConnected(ComponentName name, IBinder service) {
             mCleanerService = ((CleanerService.CleanerServiceBinder) service).getService();
             mCleanerService.setOnActionListener(RubbishCleanActivity.this);
-            if (!mCleanerService.isScanning() && !mAlreadyScanned) {
+            if (!mCleanerService.isScanning() && !mReadyScanned) {
                 mCleanerService.scanCache();
             }
         }
@@ -114,27 +114,28 @@ public class RubbishCleanActivity
 
     @Override
     public void onScanCompleted(Context context, List<CacheInfo> apps) {
-        showProgressBar(false);
         mCacheInfo.clear();
         mCacheInfo.addAll(apps);
+
+        ShowToast.show(mCacheInfo.size());
+
+        StorageSizeInfo mStorageSizeInfo = StorageUtil
+                .convertStorageSize(mCleanerService != null ? mCleanerService.getCacheSize() : 0);
+        suffix.setText(mStorageSizeInfo.suffix);
+        textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSizeInfo.value));
         rubbishMemoryAdapter.notifyDataSetChanged();
-        header.setVisibility(View.GONE);
+        showProgressBar(false);
+
         if (apps.size() > 0) {
             header.setVisibility(View.VISIBLE);
             btnClear.setVisibility(View.VISIBLE);
-
-            long medMemory = mCleanerService != null ? mCleanerService.getCacheSize() : 0;
-
-            StorageSizeInfo mStorageSizeInfo = StorageUtil.convertStorageSize(medMemory);
-            suffix.setText(mStorageSizeInfo.suffix);
-            textCounter.setText(String.format(Locale.CHINA, "%.2f", mStorageSizeInfo.value));
         } else {
             header.setVisibility(View.GONE);
             btnClear.setVisibility(View.GONE);
         }
 
-        if (!mAlreadyScanned) {
-            mAlreadyScanned = true;
+        if (!mReadyScanned) {
+            mReadyScanned = true;
         }
     }
 
@@ -154,7 +155,8 @@ public class RubbishCleanActivity
         dismissDialogLoading();
         ShowToast.show(context.getString(R.string.cleaned,
                                          Formatter.formatShortFileSize(mContext, cacheSize)));
-        header.setVisibility(View.GONE);
+        suffix.setText("B");
+        textCounter.setText(String.format(Locale.CHINA, "%.2f", 0f));
         btnClear.setVisibility(View.GONE);
         mCacheInfo.clear();
         rubbishMemoryAdapter.notifyDataSetChanged();

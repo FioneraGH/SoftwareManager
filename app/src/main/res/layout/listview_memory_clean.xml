@@ -34,18 +34,18 @@
         android:layout_marginRight="8dip"
         android:ellipsize="marquee"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:layout_toLeftOf="@+id/choice_radio"
+        android:layout_toLeftOf="@+id/cb_checked"
         android:scaleType="centerCrop" />
 
-    <RadioButton
-        android:id="@+id/choice_radio"
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/cb_checked"
         android:layout_width="30.0dip"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:clickable="false"
         android:focusable="false"
-        android:text="  " />
+        android:text="" />
 
 </RelativeLayout>
 

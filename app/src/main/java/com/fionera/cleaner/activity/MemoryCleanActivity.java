@@ -148,6 +148,9 @@ public class MemoryCleanActivity
 
     @OnClick(R.id.btn_clear)
     public void onClickClear() {
+        /**
+         * 项目相对较少直接处理
+         */
         long killAppMemory = 0;
         for (int i = mAppProcessInfos.size() - 1; i >= 0; i--) {
             if (mAppProcessInfos.get(i).checked) {

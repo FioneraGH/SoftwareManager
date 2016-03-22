@@ -53,7 +53,6 @@ public class NavigationDrawerFragment
     @Override
     public void onDetach() {
         super.onDetach();
-        mCallbacks = null;
     }
 
 

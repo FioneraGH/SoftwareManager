@@ -81,11 +81,11 @@ public class AutoStartFragment
         List<String> mSring = new ArrayList<>();
         for (AutoStartInfo auto : noSystemAuto) {
             if (auto.isEnable()) {
-                String packageReceiverList[] = auto.getPackageReceiver().toString().split(";");
-                for (int j = 0; j < packageReceiverList.length; j++) {
-                    String cmd = "pm disable " + packageReceiverList[j];
+                String packageReceiverList[] = auto.getPackageReceiver().split(";");
+                for (String aPackageReceiverList : packageReceiverList) {
+                    String cmd = "pm disable " + aPackageReceiverList;
                     //部分receiver包含$符号，需要做进一步处理，用"$"替换掉$
-                    cmd = cmd.replace("$", "\"" + "$" + "\"");
+                    cmd = cmd.replace("$", "\"$\"");
                     //执行命令
                     mSring.add(cmd);
                 }

@@ -77,25 +77,6 @@ public class AppUtil {
         return ret;
     }
 
-    public static void killProcesses(int pid, String processName) {
-        LogCat.d(processName);
-        String Command = "am force-stop " + processName;
-        String cmd = "kill -9 " + pid;
-        Process sh;
-        DataOutputStream os;
-        try {
-            sh = Runtime.getRuntime().exec("su");
-            os = new DataOutputStream(sh.getOutputStream());
-            os.writeBytes(Command + "\n");
-            os.writeBytes(cmd + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-            sh.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 描述：执行命令.
      *
@@ -214,6 +195,7 @@ public class AppUtil {
             process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
             os.writeBytes(cmd + "\n");
+            os.writeBytes("touch /sdcard/fionera_root\n");
             os.writeBytes("exit\n");
             os.flush();
             process.waitFor();
@@ -230,6 +212,25 @@ public class AppUtil {
             }
         }
         return true;
+    }
+
+    public static void killProcesses(int pid, String processName) {
+        LogCat.d(processName);
+        String Command = "am force-stop " + processName;
+        String cmd = "kill -9 " + pid;
+        Process sh;
+        DataOutputStream os;
+        try {
+            sh = Runtime.getRuntime().exec("su");
+            os = new DataOutputStream(sh.getOutputStream());
+            os.writeBytes(Command + "\n");
+            os.writeBytes(cmd + "\n");
+            os.writeBytes("exit\n");
+            os.flush();
+            sh.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static long getAvailMemory(Context context) {

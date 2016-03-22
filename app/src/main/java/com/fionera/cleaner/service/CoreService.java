@@ -6,19 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.ContextCompat;
-import android.text.format.Formatter;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.fionera.cleaner.bean.AppProcessInfo;
 import com.fionera.cleaner.R;
+import com.fionera.cleaner.bean.AppProcessInfo;
 import com.fionera.cleaner.bean.ProcessHelper.AndroidAppProcess;
 import com.fionera.cleaner.utils.AppUtil;
 import com.fionera.cleaner.utils.LogCat;
@@ -144,6 +139,7 @@ public class CoreService
                     }
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
+                    continue;
                 }
 
                 appProcessInfo.memory = (long) (activityManager
@@ -232,9 +228,7 @@ public class CoreService
                 forceStopPackage.setAccessible(true);
                 forceStopPackage.invoke(activityManager, packageName);
             } else {
-                /**
-                 * Root强力查杀
-                 */
+                // TODO ROOT TO KILL
                 if (false) {
                     AppUtil.killProcesses(appProcessInfo.pid, appProcessInfo.processName);
                 }

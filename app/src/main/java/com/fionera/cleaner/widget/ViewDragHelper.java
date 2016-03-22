@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fionera.cleaner.swipeback;
+package com.fionera.cleaner.widget;
 
 import android.content.Context;
 import android.support.v4.view.MotionEventCompat;
@@ -430,19 +430,6 @@ public class ViewDragHelper {
     }
 
     /**
-     * Sets the sensitivity of the dragger.
-     *
-     * @param context     The application context.
-     * @param sensitivity value between 0 and 1, the final value for touchSlop =
-     *                    ViewConfiguration.getScaledTouchSlop * (1 / s);
-     */
-    public void setSensitivity(Context context, float sensitivity) {
-        float s = Math.max(0f, Math.min(1.0f, sensitivity));
-        ViewConfiguration viewConfiguration = ViewConfiguration.get(context);
-        mTouchSlop = (int) (viewConfiguration.getScaledTouchSlop() * (1 / s));
-    }
-
-    /**
      * Set the minimum velocity that will be detected as having a magnitude
      * greater than zero in pixels per second. Callback methods accepting a
      * velocity will be clamped appropriately.
@@ -451,17 +438,6 @@ public class ViewDragHelper {
      */
     public void setMinVelocity(float minVel) {
         mMinVelocity = minVel;
-    }
-
-    /**
-     * Set the max velocity that will be detected as having a magnitude
-     * greater than zero in pixels per second. Callback methods accepting a
-     * velocity will be clamped appropriately.
-     *
-     * @param maxVel max velocity to detect
-     */
-    public void setMaxVelocity(float maxVel) {
-        mMaxVelocity = maxVel;
     }
 
     /**
@@ -488,12 +464,6 @@ public class ViewDragHelper {
 
     /**
      * Enable edge tracking for the selected edges of the parent view. The
-     * callback's
-     * {@link me.imid.swipebacklayout.lib.ViewDragHelper.Callback#onEdgeTouched(int, int)}
-     * and
-     * {@link me.imid.swipebacklayout.lib.ViewDragHelper.Callback#onEdgeDragStarted(int, int)}
-     * methods will only be invoked for edges for which edge tracking has been
-     * enabled.
      *
      * @param edgeFlags Combination of edge flags describing the edges to watch
      * @see #EDGE_LEFT
@@ -531,7 +501,6 @@ public class ViewDragHelper {
     /**
      * Capture a specific child view for dragging within the parent. The
      * callback will be notified but
-     * {@link me.imid.swipebacklayout.lib.ViewDragHelper.Callback#tryCaptureView(android.view.View, int)}
      * will not be asked permission to capture this view.
      *
      * @param childView       Child view to capture
@@ -1544,8 +1513,6 @@ public class ViewDragHelper {
     /**
      * Find the topmost child under the given point within the parent view's
      * coordinate system. The child order is determined using
-     * {@link me.imid.swipebacklayout.lib.ViewDragHelper.Callback#getOrderedChildIndex(int)}
-     * .
      *
      * @param x X position to test in the parent's coordinate system
      * @param y Y position to test in the parent's coordinate system

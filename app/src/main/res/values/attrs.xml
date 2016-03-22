@@ -17,7 +17,6 @@
     </declare-styleable>
 
     <declare-styleable name="SwipeBackLayout">
-        <attr name="edge_size" format="dimension" />
         <attr name="edge_flag">
             <enum name="left" value="0" />
             <enum name="right" value="1" />

@@ -4,28 +4,33 @@
         <item name="colorPrimary">@color/grey1</item>
         <item name="colorPrimaryDark">@color/grey</item>
         <item name="colorAccent">@color/blue</item>
-        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
-        <item name="android:windowAnimationStyle">@style/ActivityAnim</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnim</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <style name="ActivityAnim" parent="@android:style/Animation.Activity">
-        <item name="android:activityOpenEnterAnimation">@anim/anim_trans_right_in</item>
-        <item name="android:activityOpenExitAnimation">@anim/anim_activity_exit</item>
-        <item name="android:activityCloseExitAnimation">@anim/anim_trans_right_out</item>
-        <item name="android:activityCloseEnterAnimation">@anim/anim_activity_in</item>
+    <style name="FadeExitAppTheme" parent="AppBaseTheme">
+        <item name="android:windowAnimationStyle">@style/FadeExitWindowAnim</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="WindowAnim" parent="@android:style/Animation.Translucent">
+        <item name="android:windowEnterAnimation">@anim/anim_trans_right_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_trans_right_out</item>
+    </style>
+
+    <style name="FadeExitWindowAnim" parent="@android:style/Animation.Translucent">
+        <item name="android:windowExitAnimation">@anim/anim_activity_exit</item>
     </style>
 
     <style name="DialogAppTheme" parent="AppTheme">
-        <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowBackground">@color/transparent</item>
     </style>
 
     <style name="SwipeBackLayout">
-        <item name="edge_size">50dip</item>
         <item name="shadow_left">@drawable/bg_swipe_layout_</item>
         <item name="shadow_right">@drawable/bg_swipe_layout_shadow_right</item>
         <item name="shadow_bottom">@drawable/bg_swipe_layout_shadow_bottom</item>

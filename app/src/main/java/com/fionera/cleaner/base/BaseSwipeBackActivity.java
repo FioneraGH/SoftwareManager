@@ -1,52 +1,38 @@
 package com.fionera.cleaner.base;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 
-import com.fionera.cleaner.swipeback.SwipeBackActivityBase;
-import com.fionera.cleaner.swipeback.SwipeBackActivityHelper;
-import com.fionera.cleaner.swipeback.SwipeBackLayout;
-import com.fionera.cleaner.swipeback.Utils;
+import com.fionera.cleaner.R;
+import com.fionera.cleaner.utils.ShowToast;
+import com.fionera.cleaner.widget.SwipeBackLayout;
 
-public abstract class BaseSwipeBackActivity extends BaseActivity implements SwipeBackActivityBase {
-
-    private SwipeBackActivityHelper mHelper;
+public abstract class BaseSwipeBackActivity extends BaseActivity{
+    private SwipeBackLayout mSwipeBackLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mHelper = new SwipeBackActivityHelper(this);
-        mHelper.onActivityCreate();
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        mSwipeBackLayout = (SwipeBackLayout) LayoutInflater.from(this).inflate(
+                R.layout.ui_swipeback_layout, null);
     }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mHelper.onPostCreate();
+        mSwipeBackLayout.attachToActivity(this);
     }
 
     @Override
     public View findViewById(int id) {
         View v = super.findViewById(id);
-        if (v == null && mHelper != null)
-            return mHelper.findViewById(id);
+        if (v == null){
+            return mSwipeBackLayout.findViewById(id);
+        }
         return v;
-    }
-
-    @Override
-    public SwipeBackLayout getSwipeBackLayout() {
-        return mHelper.getSwipeBackLayout();
-    }
-
-    @Override
-    public void setSwipeBackEnable(boolean enable) {
-        getSwipeBackLayout().setEnableGesture(enable);
-    }
-
-    @Override
-    public void scrollToFinishActivity() {
-        Utils.convertActivityToTranslucent(this);
-        getSwipeBackLayout().scrollToFinishActivity();
     }
 }

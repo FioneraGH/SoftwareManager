@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.base.BaseSwipeBackActivity;
@@ -39,6 +40,16 @@ public class AutoStartManageActivity
 
         viewPager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public class MyPagerAdapter

@@ -3,6 +3,7 @@ package com.fionera.cleaner.activity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.fionera.cleaner.base.BaseSwipeBackActivity;
@@ -31,5 +32,15 @@ public class AboutActivity
             ab.setDisplayHomeAsUpEnabled(true);
         }
         textView.setText(AppUtil.getVersion(this));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

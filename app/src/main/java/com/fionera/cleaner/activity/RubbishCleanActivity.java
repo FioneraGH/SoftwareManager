@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.format.Formatter;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -31,7 +33,6 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-
 
 public class RubbishCleanActivity
         extends BaseSwipeBackActivity
@@ -89,7 +90,7 @@ public class RubbishCleanActivity
 
         setSupportActionBar(toolbar);
 
-        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
@@ -99,6 +100,16 @@ public class RubbishCleanActivity
         mListView.setOnItemClickListener(rubbishMemoryAdapter);
         bindService(new Intent(mContext, CleanerService.class), mServiceConnection,
                     Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -117,7 +128,7 @@ public class RubbishCleanActivity
         mCacheInfo.clear();
         mCacheInfo.addAll(apps);
 
-        ShowToast.show(mCacheInfo.size());
+        ShowToast.show("共" + mCacheInfo.size() + "款可清理");
 
         StorageSizeInfo mStorageSizeInfo = StorageUtil
                 .convertStorageSize(mCleanerService != null ? mCleanerService.getCacheSize() : 0);

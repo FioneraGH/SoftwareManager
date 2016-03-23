@@ -19,7 +19,7 @@ public class NavigationDrawerFragment
         implements View.OnClickListener {
 
     private NavigationDrawerCallbacks mCallbacks;
-    private final int radioIds[] = {R.id.rb_home_tag, R.id.rb_setting_tag};
+    private final int radioIds[] = {R.id.rb_home_tag, R.id.rb_network_tag, R.id.rb_setting_tag};
     private RadioButton radios[] = new RadioButton[radioIds.length];
 
     public interface NavigationDrawerCallbacks {
@@ -54,6 +54,7 @@ public class NavigationDrawerFragment
     @Override
     public void onDetach() {
         super.onDetach();
+        mCallbacks = null;
     }
 
 

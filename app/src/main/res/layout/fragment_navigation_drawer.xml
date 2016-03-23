@@ -40,6 +40,20 @@
             android:textSize="17sp"/>
 
         <RadioButton
+            android:id="@+id/rb_network_tag"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/sl_drawer_bg"
+            android:button="@null"
+            android:drawableLeft="@drawable/ic_drawer_home"
+            android:drawablePadding="15dp"
+            android:gravity="center_vertical|left"
+            android:paddingLeft="17dp"
+            android:paddingRight="0dp"
+            android:text="网络控制"
+            android:textSize="17sp"/>
+
+        <RadioButton
             android:id="@+id/rb_setting_tag"
             android:layout_width="match_parent"
             android:layout_height="60dp"

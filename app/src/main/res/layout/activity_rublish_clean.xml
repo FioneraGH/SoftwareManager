@@ -68,17 +68,9 @@
                 android:id="@+id/listview"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_below="@+id/rl_header"
                 android:layout_weight="1"
                 android:clipToPadding="false"
-                android:divider="@null"
-                android:dividerHeight="4dp"
-                android:fadingEdge="none"
-                android:fastScrollEnabled="true"
-                android:fitsSystemWindows="true"
-                android:focusable="true"
-                android:listSelector="@android:color/transparent"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:scrollbarStyle="outsideOverlay"
                 android:scrollbars="none"/>
 

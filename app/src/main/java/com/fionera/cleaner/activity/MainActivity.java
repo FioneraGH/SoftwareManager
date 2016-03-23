@@ -11,6 +11,7 @@ import com.fionera.cleaner.R;
 import com.fionera.cleaner.base.BaseActivity;
 import com.fionera.cleaner.fragment.MainFragment;
 import com.fionera.cleaner.fragment.NavigationDrawerFragment;
+import com.fionera.cleaner.fragment.NetworkFragment;
 import com.fionera.cleaner.fragment.SettingsFragment;
 import com.fionera.cleaner.utils.ShowToast;
 
@@ -26,6 +27,7 @@ public class MainActivity
     DrawerLayout mDrawerLayout;
 
     private MainFragment mMainFragment;
+    private NetworkFragment mNetworkFragment;
     private SettingsFragment mSettingsFragment;
 
     @Override
@@ -51,6 +53,9 @@ public class MainActivity
         if (mMainFragment != null) {
             transaction.hide(mMainFragment);
         }
+        if (mNetworkFragment != null) {
+            transaction.hide(mNetworkFragment);
+        }
         if (mSettingsFragment != null) {
             transaction.hide(mSettingsFragment);
         }
@@ -70,6 +75,19 @@ public class MainActivity
                 mDrawerLayout.closeDrawers();
                 break;
             case 1:
+                if(ab != null) {
+                    ab.setTitle("网络控制");
+                }
+                if (mNetworkFragment == null) {
+                    mNetworkFragment = new NetworkFragment();
+                    transaction.add(R.id.fl_home_container, mNetworkFragment);
+                } else {
+                    transaction.show(mNetworkFragment);
+                }
+                transaction.commit();
+                mDrawerLayout.closeDrawers();
+                break;
+            case 2:
                 if(ab != null) {
                     ab.setTitle("设置");
                 }

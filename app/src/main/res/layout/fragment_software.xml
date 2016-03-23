@@ -22,15 +22,12 @@
         <ListView
             android:id="@+id/listview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fastScrollEnabled="true"
-            android:focusable="true"
-            android:listSelector="@android:color/transparent"
-            android:scrollbars="none"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:clipToPadding="false"
-            android:divider="@null"
-            android:dividerHeight="4dp"
-            android:padding="12dp" />
+            android:padding="8dp"
+            android:scrollbarStyle="outsideOverlay"
+            android:scrollbars="none"/>
     </LinearLayout>
 
     <LinearLayout

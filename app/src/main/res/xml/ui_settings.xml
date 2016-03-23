@@ -5,6 +5,12 @@
         <Preference
             android:key="createShortCut"
             android:title="创建&quot;一键加速&quot;快捷方式" />
+
+        <SwitchPreference
+            android:key="enableRoot"
+            android:title="Root强力清理"
+            android:summaryOn="已开启Root模式"
+            android:summaryOff="已关闭Root模式"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/category_other">

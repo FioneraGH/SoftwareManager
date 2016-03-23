@@ -1,34 +1,43 @@
 package com.fionera.cleaner.base;
 
-import android.app.Fragment;
-import android.content.Intent;
-import android.os.Bundle;
+import android.content.Context;
+import android.support.v4.app.Fragment;
 
-public class BaseFragment extends Fragment {
+import com.fionera.cleaner.dialogs.ProgressDialogFragment;
 
-	protected void startActivity(Class<?> cls) {
-		startActivity(cls, null);
-	}
+public class BaseFragment
+        extends Fragment {
 
-	protected void startActivity(Class<?> cls, Bundle bundle) {
-		Intent intent = new Intent();
-		intent.setClass(getActivity(), cls);
-		if (bundle != null) {
-			intent.putExtras(bundle);
-		}
-		startActivity(intent);
-	}
+    protected Context mContext;
 
-	protected void startActivity(String action) {
-		startActivity(action, null);
-	}
+    private static String DIALOG_TAG = "BaseDialog";
 
-	protected void startActivity(String action, Bundle bundle) {
-		Intent intent = new Intent();
-		intent.setAction(action);
-		if (bundle != null) {
-			intent.putExtras(bundle);
-		}
-		startActivity(intent);
-	}
+    private ProgressDialogFragment mProgressDialogFragment;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
+    public void showDialogLoading() {
+        showDialogLoading(null);
+    }
+
+    public void showDialogLoading(String msg) {
+        if (mProgressDialogFragment == null) {
+            mProgressDialogFragment = ProgressDialogFragment.newInstance(0, null);
+        }
+        if (msg != null) {
+            mProgressDialogFragment.setMessage(msg);
+        }
+        mProgressDialogFragment.show(getFragmentManager(), DIALOG_TAG);
+
+    }
+
+    public void dismissDialogLoading() {
+        if (mProgressDialogFragment != null) {
+            mProgressDialogFragment.dismiss();
+        }
+    }
 }

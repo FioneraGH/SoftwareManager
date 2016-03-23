@@ -8,96 +8,41 @@ import java.util.List;
 
 public class ShellUtils {
 
-    public static final String COMMAND_SU       = "su";
-    public static final String COMMAND_ZLSU       = "zlsu";
-    public static final String COMMAND_SH       = "sh";
-    public static final String COMMAND_EXIT     = "exit\n";
+    public static final String COMMAND_SU = "su";
+    public static final String COMMAND_SH = "sh";
+    public static final String COMMAND_EXIT = "exit\n";
     public static final String COMMAND_LINE_END = "\n";
 
-    /**
-     * check whether has root permission
-     * 
-     * @return
-     */
     public static boolean checkRootPermission() {
         return execCommand("echo root", true, false).result == 0;
     }
 
-    /**
-     * execute shell command, default return result msg
-     * 
-     * @param command command
-     * @param isRoot whether need to run with root
-     * @return
-     * @see ShellUtils#execCommand(String[], boolean, boolean)
-     */
     public static CommandResult execCommand(String command, boolean isRoot) {
-        return execCommand(new String[] {command}, isRoot, true);
+        return execCommand(new String[]{command}, isRoot, true);
     }
 
-    /**
-     * execute shell commands, default return result msg
-     * 
-     * @param commands command list
-     * @param isRoot whether need to run with root
-     * @return
-     * @see ShellUtils#execCommand(String[], boolean, boolean)
-     */
     public static CommandResult execCommand(List<String> commands, boolean isRoot) {
-        return execCommand(commands == null ? null : commands.toArray(new String[] {}), isRoot, true);
+        return execCommand(commands == null ? null : commands.toArray(new String[]{}), isRoot,
+                           true);
     }
 
-    /**
-     * execute shell commands, default return result msg
-     * 
-     * @param commands command array
-     * @param isRoot whether need to run with root
-     * @return
-     * @see ShellUtils#execCommand(String[], boolean, boolean)
-     */
     public static CommandResult execCommand(String[] commands, boolean isRoot) {
         return execCommand(commands, isRoot, true);
     }
 
-    /**
-     * execute shell command
-     * 
-     * @param command command
-     * @param isRoot whether need to run with root
-     * @param isNeedResultMsg whether need result msg
-     * @return
-     * @see ShellUtils#execCommand(String[], boolean, boolean)
-     */
-    public static CommandResult execCommand(String command, boolean isRoot, boolean isNeedResultMsg) {
-        return execCommand(new String[] {command}, isRoot, isNeedResultMsg);
+    public static CommandResult execCommand(String command, boolean isRoot,
+                                            boolean isNeedResultMsg) {
+        return execCommand(new String[]{command}, isRoot, isNeedResultMsg);
     }
 
-    /**
-     * execute shell commands
-     * 
-     * @param commands command list
-     * @param isRoot whether need to run with root
-     * @param isNeedResultMsg whether need result msg
-     * @return
-     * @see ShellUtils#execCommand(String[], boolean, boolean)
-     */
-    public static CommandResult execCommand(List<String> commands, boolean isRoot, boolean isNeedResultMsg) {
-        return execCommand(commands == null ? null : commands.toArray(new String[] {}), isRoot, isNeedResultMsg);
+    public static CommandResult execCommand(List<String> commands, boolean isRoot,
+                                            boolean isNeedResultMsg) {
+        return execCommand(commands == null ? null : commands.toArray(new String[commands.size()]), isRoot,
+                           isNeedResultMsg);
     }
 
-    /**
-     * execute shell commands
-     * 
-     * @param commands command array
-     * @param isRoot whether need to run with root
-     * @param isNeedResultMsg whether need result msg
-     * @return <ul>
-     *         <li>if isNeedResultMsg is false, {@link ShellUtils.CommandResult#successMsg} is null and
-     *         {@link ShellUtils.CommandResult#errorMsg} is null.</li>
-     *         <li>if {@link ShellUtils.CommandResult#result} is -1, there maybe some excepiton.</li>
-     *         </ul>
-     */
-    public static CommandResult execCommand(String[] commands, boolean isRoot, boolean isNeedResultMsg) {
+    public static CommandResult execCommand(String[] commands, boolean isRoot,
+                                            boolean isNeedResultMsg) {
         int result = -1;
         if (commands == null || commands.length == 0) {
             return new CommandResult(result, null, null);
@@ -118,7 +63,6 @@ public class ShellUtils {
                     continue;
                 }
 
-                // donnot use os.writeBytes(commmand), avoid chinese charset error
                 os.write(command.getBytes());
                 os.writeBytes(COMMAND_LINE_END);
                 os.flush();
@@ -141,8 +85,6 @@ public class ShellUtils {
                     errorMsg.append(s);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -164,33 +106,23 @@ public class ShellUtils {
                 process.destroy();
             }
         }
-        return new CommandResult(result, successMsg == null ? null : successMsg.toString(), errorMsg == null ? null
-                : errorMsg.toString());
+        return new CommandResult(result, successMsg == null ? null : successMsg.toString(),
+                                 errorMsg == null ? null : errorMsg.toString());
     }
 
-    /**
-     * result of command
-     * <ul>
-     * <li>{@link ShellUtils.CommandResult#result} means result of command, 0 means normal, else means error, same to excute in
-     * linux shell</li>
-     * <li>{@link ShellUtils.CommandResult#successMsg} means success message of command result</li>
-     * <li>{@link ShellUtils.CommandResult#errorMsg} means error message of command result</li>
-     * </ul>
-     * 
-     * @author <a href="http://www.trinea.cn" target="_blank">Trinea</a> 2013-5-16
-     */
     public static class CommandResult {
-
-        /** result of command **/
-        public int    result;
-        /** success message of command result **/
+        /**
+         * result of command
+         **/
+        public int result;
+        /**
+         * success message of command result
+         **/
         public String successMsg;
-        /** error message of command result **/
+        /**
+         * error message of command result
+         **/
         public String errorMsg;
-
-        public CommandResult(int result) {
-            this.result = result;
-        }
 
         public CommandResult(int result, String successMsg, String errorMsg) {
             this.result = result;

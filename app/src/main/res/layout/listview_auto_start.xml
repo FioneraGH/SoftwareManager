@@ -18,18 +18,15 @@
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
         android:layout_weight="1">
 
         <TextView
             android:id="@+id/app_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:ellipsize="marquee"
+            android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:textAlignment="viewStart"
-            android:layout_gravity="start"></TextView>
+            android:layout_gravity="start"/>
 
         <TextView
             android:id="@+id/app_size"
@@ -37,22 +34,15 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="?android:attr/textColorSecondary"
-            android:textAlignment="viewStart"
             android:text="开机/后台自启"
-            android:layout_gravity="start"></TextView>
-
+            android:layout_gravity="start"/>
     </LinearLayout>
 
-
-    <TextView
-        android:id="@+id/disable_switch"
-        android:background="@drawable/ic_switch_on"
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/sw_disable"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textSize="12sp"
         android:layout_marginRight="8dp"
         android:layout_marginEnd="8dp" />
 </LinearLayout>

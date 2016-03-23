@@ -20,139 +20,100 @@ public class BootStartUtils {
 
     public static List<AutoStartInfo> fetchInstalledApps(Context mContext) {
         PackageManager pm = mContext.getPackageManager();
-        List<ApplicationInfo> appInfo = pm.getInstalledApplications(0);
-        Iterator<ApplicationInfo> appInfoIterator = appInfo.iterator();
-        List<AutoStartInfo> appList = new ArrayList<AutoStartInfo>(appInfo.size());
+        List<ApplicationInfo> appInfoList = pm.getInstalledApplications(0);
+        Iterator<ApplicationInfo> appInfoIterator = appInfoList.iterator();
+        List<AutoStartInfo> autoStartInfoList = new ArrayList<>(appInfoList.size());
 
         while (appInfoIterator.hasNext()) {
             ApplicationInfo app = appInfoIterator.next();
-            int flag = pm.checkPermission(
-                    BOOT_START_PERMISSION, app.packageName);
-            if (flag == PackageManager.PERMISSION_GRANTED) {
-                AutoStartInfo appMap = new AutoStartInfo();
-                String label = pm.getApplicationLabel(app).toString();
-                Drawable icon = pm.getApplicationIcon(app);
-                String packageName = app.packageName;
-                if ((app.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-                    appMap.setSystem(true);
-                    //abAppProcessInfo.isSystem = true;
-                } else {
-                    appMap.setSystem(false);
-                    // abAppProcessInfo.isSystem = false;
-                }
+            AutoStartInfo autoStartInfo = new AutoStartInfo();
+            autoStartInfo.setLabel(pm.getApplicationLabel(app).toString());
+            autoStartInfo.setPackageName(app.packageName);
+            autoStartInfo.setIcon(pm.getApplicationIcon(app));
+            /**
+             * 开机自启动，权限描述不完整
+             */
+            autoStartInfo.setEnable(pm.checkPermission(BOOT_START_PERMISSION,
+                                                       app.packageName) == PackageManager
+                    .PERMISSION_GRANTED);
+            autoStartInfo.setSystem((app.flags & ApplicationInfo.FLAG_SYSTEM) != 0);
+            autoStartInfoList.add(autoStartInfo);
 
-                //  appMap.setDesc(desc);
-                appMap.setIcon(icon);
-                appMap.setPackageName(packageName);
-                appMap.setLabel(label);
-
-
-                appList.add(appMap);
-            }
         }
-        return appList;
+        return autoStartInfoList;
     }
 
-
+    @SuppressWarnings("WrongConstant")
     public static List<AutoStartInfo> fetchAutoApps(Context mContext) {
         PackageManager pm = mContext.getPackageManager();
-        Intent intent = new Intent(Intent.ACTION_BOOT_COMPLETED);
-        List<ResolveInfo> resolveInfoList = pm.queryBroadcastReceivers(intent, PackageManager.GET_DISABLED_COMPONENTS);
-        List<AutoStartInfo> appList = new ArrayList<AutoStartInfo>();
-        String appName = null;
-        String packageReceiver = null;
-        Drawable icon = null;
-        boolean isSystem = false;
-        boolean isenable = true;
+        List<ResolveInfo> resolveInfoList = pm
+                .queryBroadcastReceivers(new Intent(Intent.ACTION_BOOT_COMPLETED),
+                                         PackageManager.GET_DISABLED_COMPONENTS);
+        List<AutoStartInfo> autoStartInfoList = new ArrayList<>();
+        String appName;
+        String packageReceiver;
+        Drawable icon;
+        boolean isSystem;
+        boolean isEnable;
         if (resolveInfoList.size() > 0) {
 
             appName = resolveInfoList.get(0).loadLabel(pm).toString();
-            packageReceiver = resolveInfoList.get(0).activityInfo.packageName + "/" + resolveInfoList.get(0).activityInfo.name;
+            /**
+             * pm disable/enable 语法：组件=包名/类名
+             */
+            packageReceiver = resolveInfoList
+                    .get(0).activityInfo.packageName + "/" + resolveInfoList
+                    .get(0).activityInfo.name;
             icon = resolveInfoList.get(0).loadIcon(pm);
-            ComponentName mComponentName1 = new ComponentName(resolveInfoList.get(0).activityInfo.packageName, resolveInfoList.get(0).activityInfo.name);
-
-            if (pm.getComponentEnabledSetting(mComponentName1) == 2) {
-
-                isenable = false;
-            } else {
-                isenable = true;
-            }
-            if ((resolveInfoList.get(0).activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-                isSystem = true;
-            } else {
-                isSystem = false;
-            }
+            isEnable = pm.getComponentEnabledSetting(
+                    new ComponentName(resolveInfoList.get(0).activityInfo.packageName,
+                                      resolveInfoList
+                                              .get(0).activityInfo.name)) != PackageManager
+                    .COMPONENT_ENABLED_STATE_DISABLED;
+            isSystem = (resolveInfoList
+                    .get(0).activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
             for (int i = 1; i < resolveInfoList.size(); i++) {
                 AutoStartInfo mAutoStartInfo = new AutoStartInfo();
                 if (appName.equals(resolveInfoList.get(i).loadLabel(pm).toString())) {
-                    packageReceiver = packageReceiver + ";" + resolveInfoList.get(i).activityInfo.packageName + "/" + resolveInfoList.get(i).activityInfo.name;
+                    packageReceiver = packageReceiver + ";" + resolveInfoList
+                            .get(i).activityInfo.packageName + "/" + resolveInfoList
+                            .get(i).activityInfo.name;
                 } else {
                     mAutoStartInfo.setLabel(appName);
-                    mAutoStartInfo.setSystem(isSystem);
-                    mAutoStartInfo.setEnable(isenable);
-                    mAutoStartInfo.setIcon(icon);
                     mAutoStartInfo.setPackageReceiver(packageReceiver);
+                    mAutoStartInfo.setSystem(isSystem);
+                    mAutoStartInfo.setIcon(icon);
+                    mAutoStartInfo.setEnable(isEnable);
 
-                    appList.add(mAutoStartInfo);
+                    autoStartInfoList.add(mAutoStartInfo);
+
                     appName = resolveInfoList.get(i).loadLabel(pm).toString();
-                    packageReceiver = resolveInfoList.get(i).activityInfo.packageName + "/" + resolveInfoList.get(i).activityInfo.name;
+                    /**
+                     * pm disable/enable 语法：组件=包名/类名
+                     */
+                    packageReceiver = resolveInfoList
+                            .get(i).activityInfo.packageName + "/" + resolveInfoList
+                            .get(i).activityInfo.name;
                     icon = resolveInfoList.get(i).loadIcon(pm);
-                    ComponentName mComponentName2 = new ComponentName(resolveInfoList.get(i).activityInfo.packageName, resolveInfoList.get(i).activityInfo.name);
-                    if (pm.getComponentEnabledSetting(mComponentName2) == 2) {
-
-                        isenable = false;
-                    } else {
-                        isenable = true;
-                    }
-
-                    if ((resolveInfoList.get(i).activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-                        isSystem = true;
-                    } else {
-                        isSystem = false;
-                    }
-
+                    isEnable = pm.getComponentEnabledSetting(
+                            new ComponentName(resolveInfoList.get(i).activityInfo.packageName,
+                                              resolveInfoList
+                                                      .get(i).activityInfo.name)) !=
+                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+                    isSystem = (resolveInfoList
+                            .get(i).activityInfo.applicationInfo.flags & ApplicationInfo
+                            .FLAG_SYSTEM) != 0;
                 }
-
             }
             AutoStartInfo mAutoStartInfo = new AutoStartInfo();
             mAutoStartInfo.setLabel(appName);
             mAutoStartInfo.setSystem(isSystem);
-            mAutoStartInfo.setEnable(isenable);
+            mAutoStartInfo.setEnable(isEnable);
             mAutoStartInfo.setIcon(icon);
             mAutoStartInfo.setPackageReceiver(packageReceiver);
-            appList.add(mAutoStartInfo);
-
+            autoStartInfoList.add(mAutoStartInfo);
         }
 
-
-//        for (ResolveInfo resolveInfo : resolveInfoList) {
-//
-//
-//            ComponentName mComponentName = new ComponentName(resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-//
-//
-//            if (pm.getComponentEnabledSetting(mComponentName) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-//
-//
-//                as.setEnable(false);
-//            } else {
-//                as.setEnable(true);
-//            }
-//
-//            if ((resolveInfo.activityInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
-//                as.setSystem(true);
-//            } else {
-//                as.setSystem(false);
-//            }
-//            as.setIcon(resolveInfo.loadIcon(pm));
-//            as.setPackageName(resolveInfo.activityInfo.packageName);
-//            as.setLabel(resolveInfo.loadLabel(pm).toString());
-//            appList.add(as);
-
-        //   Log.i("yzy", "COMPONENT_ENABLED_STATE:" + pm.getComponentEnabledSetting(mComponentName) + "\tpackageName:" + resolveInfo.activityInfo.packageName);
-
-        //}
-
-        return appList;
+        return autoStartInfoList;
     }
 }

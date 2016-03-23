@@ -1,5 +1,6 @@
 package com.fionera.cleaner.fragment;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,7 +15,7 @@ import com.fionera.cleaner.base.BaseFragment;
 import butterknife.ButterKnife;
 
 public class NavigationDrawerFragment
-        extends BaseFragment
+        extends Fragment
         implements View.OnClickListener {
 
     private NavigationDrawerCallbacks mCallbacks;

@@ -6,12 +6,9 @@ public class AutoStartInfo {
     private String label;
     private String packageName;
     private Drawable icon;
-    private String name;
-
     private String packageReceiver;
-    private String desc;
-    public boolean isSystem;
-    public boolean isEnable;
+    private boolean isSystem;
+    private boolean isEnable;
 
     public String getLabel() {
         return label;
@@ -29,28 +26,12 @@ public class AutoStartInfo {
         this.packageName = packageName;
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
     public Drawable getIcon() {
         return icon;
     }
 
     public void setIcon(Drawable icon) {
         this.icon = icon;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public boolean isSystem() {

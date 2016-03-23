@@ -2,19 +2,11 @@ package com.fionera.cleaner.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.View;
-/**
- * © 2012 amsoft.cn
- * 名称：AbAlertDialogFragment.java 
- * 描述：弹出框
- *
- * @author 
- * @version v1.0
- * @date：2014-07-29 上午9:00:52
- */
+
 public class AlertDialogFragment extends DialogFragment {
 	
 	int mIcon;

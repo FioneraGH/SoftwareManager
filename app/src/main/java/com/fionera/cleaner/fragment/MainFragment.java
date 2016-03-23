@@ -1,7 +1,9 @@
 package com.fionera.cleaner.fragment;
 
 import android.animation.ValueAnimator;
+import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.fionera.cleaner.base.BaseFragment;
 import com.fionera.cleaner.bean.SDCardInfo;
 import com.fionera.cleaner.activity.AutoStartManageActivity;
 import com.fionera.cleaner.activity.MemoryCleanActivity;
@@ -25,46 +26,47 @@ import butterknife.Bind;
 import butterknife.OnClick;
 
 public class MainFragment
-        extends BaseFragment {
+        extends Fragment {
+
+    private Context mContext;
 
     @Bind(R.id.arc_home_storage)
     ArcProgress arcStore;
     @Bind(R.id.capacity)
     TextView capacity;
+
     @Bind(R.id.arc_home_process)
     ArcProgress arcProcess;
-
-    Context mContext;
 
     private ValueAnimator valueAnimator1;
     private ValueAnimator valueAnimator2;
 
     @OnClick(R.id.card1)
     void speedUp() {
-        startActivity(MemoryCleanActivity.class);
+        startActivity(new Intent(mContext, MemoryCleanActivity.class));
     }
 
     @OnClick(R.id.card2)
     void rubbishClean() {
-        startActivity(RubbishCleanActivity.class);
+        startActivity(new Intent(mContext, RubbishCleanActivity.class));
     }
 
     @OnClick(R.id.card3)
     void AutoStartManage() {
-        startActivity(AutoStartManageActivity.class);
+        startActivity(new Intent(mContext, AutoStartManageActivity.class));
     }
 
     @OnClick(R.id.card4)
     void SoftwareManage() {
-        startActivity(SoftwareManageActivity.class);
+        startActivity(new Intent(mContext, SoftwareManageActivity.class));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        mContext = getActivity();
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.bind(this, view);
-        mContext = getActivity();
         return view;
     }
 

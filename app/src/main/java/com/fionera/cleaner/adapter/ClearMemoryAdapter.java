@@ -51,7 +51,6 @@ public class ClearMemoryAdapter
             holder.appIcon = (ImageView) convertView.findViewById(R.id.iv_splash);
             holder.appName = (TextView) convertView.findViewById(R.id.name);
             holder.memory = (TextView) convertView.findViewById(R.id.memory);
-
             holder.cb = (AppCompatCheckBox) convertView.findViewById(R.id.cb_checked);
             convertView.setTag(holder);
         } else {

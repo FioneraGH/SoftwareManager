@@ -15,32 +15,30 @@ import android.widget.TextView;
 import com.fionera.cleaner.bean.CacheInfo;
 import com.fionera.cleaner.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RubbishMemoryAdapter
-        extends BaseAdapter implements AdapterView.OnItemClickListener {
+        extends BaseAdapter
+        implements AdapterView.OnItemClickListener {
 
-    public List<CacheInfo> mlistAppInfo;
-    LayoutInflater infater = null;
+    private List<CacheInfo> mListAppInfo;
+    private LayoutInflater infater = null;
     private Context mContext;
-    public static List<Integer> clearIds;
 
     public RubbishMemoryAdapter(Context context, List<CacheInfo> apps) {
-        infater = LayoutInflater.from(context);
-        mContext = context;
-        clearIds = new ArrayList<>();
-        this.mlistAppInfo = apps;
+        this.infater = LayoutInflater.from(context);
+        this.mContext = context;
+        this.mListAppInfo = apps;
     }
 
     @Override
     public int getCount() {
-        return mlistAppInfo.size();
+        return mListAppInfo.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return mlistAppInfo.get(position);
+        return mListAppInfo.get(position);
     }
 
     @Override
@@ -50,29 +48,22 @@ public class RubbishMemoryAdapter
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (convertView == null) {
-            convertView = infater.inflate(R.layout.listview_rublish_clean,
-                    parent, false);
+            convertView = infater.inflate(R.layout.listview_rublish_clean, parent, false);
             holder = new ViewHolder();
-            holder.appIcon = (ImageView) convertView
-                    .findViewById(R.id.app_icon);
-            holder.appName = (TextView) convertView
-                    .findViewById(R.id.app_name);
-            holder.size = (TextView) convertView
-                    .findViewById(R.id.app_size);
+            holder.appIcon = (ImageView) convertView.findViewById(R.id.app_icon);
+            holder.appName = (TextView) convertView.findViewById(R.id.app_name);
+            holder.size = (TextView) convertView.findViewById(R.id.app_size);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         final CacheInfo item = (CacheInfo) getItem(position);
-        if (item != null) {
-            holder.appIcon.setImageDrawable(item.getApplicationIcon());
-            holder.appName.setText(item.getApplicationName());
-            holder.size.setText(Formatter.formatShortFileSize(mContext, item.getCacheSize()));
-            holder.packageName = item.getPackageName();
-        }
-
+        holder.appIcon.setImageDrawable(item.getApplicationIcon());
+        holder.appName.setText(item.getApplicationName());
+        holder.size.setText(Formatter.formatShortFileSize(mContext, item.getCacheSize()));
+        holder.packageName = item.getPackageName();
 
         return convertView;
     }
@@ -97,5 +88,4 @@ public class RubbishMemoryAdapter
         TextView size;
         String packageName;
     }
-
 }

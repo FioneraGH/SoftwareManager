@@ -3,7 +3,6 @@ package com.fionera.cleaner.base;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 
@@ -14,14 +13,11 @@ import butterknife.ButterKnife;
 public abstract class BaseActivity
         extends AppCompatActivity {
 
-    protected int mScreenWidth;
-    protected int mScreenHeight;
-    protected float mDensity;
     protected Context mContext;
 
-    private static String mDialogTag = "BaseDialog";
+    private static String DIALOG_TAG = "BaseDialog";
 
-    ProgressDialogFragment mProgressDialogFragment;
+    private ProgressDialogFragment mProgressDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +25,6 @@ public abstract class BaseActivity
         mContext = this;
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
-        mScreenWidth = metric.widthPixels;
-        mScreenHeight = metric.heightPixels;
-        mDensity = metric.density;
     }
 
     @Override
@@ -53,19 +46,6 @@ public abstract class BaseActivity
         startActivity(intent);
     }
 
-    protected void startActivity(String action) {
-        startActivity(action, null);
-    }
-
-    protected void startActivity(String action, Bundle bundle) {
-        Intent intent = new Intent();
-        intent.setAction(action);
-        if (bundle != null) {
-            intent.putExtras(bundle);
-        }
-        startActivity(intent);
-    }
-
     public void showDialogLoading() {
         showDialogLoading(null);
     }
@@ -77,7 +57,7 @@ public abstract class BaseActivity
         if (msg != null) {
             mProgressDialogFragment.setMessage(msg);
         }
-        mProgressDialogFragment.show(getFragmentManager(), mDialogTag);
+        mProgressDialogFragment.show(getSupportFragmentManager(), DIALOG_TAG);
 
     }
 

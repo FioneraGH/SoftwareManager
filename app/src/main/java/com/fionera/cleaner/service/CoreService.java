@@ -116,6 +116,7 @@ public class CoreService
                 appProcessInfo = new AppProcessInfo(runningAppProcessInfo.processName,
                                                     runningAppProcessInfo.pid,
                                                     runningAppProcessInfo.uid);
+
                 try {
                     ApplicationInfo appInfo;
                     if (runningAppProcessInfo.processName.contains(":")) {
@@ -126,6 +127,9 @@ public class CoreService
                                 .getApplicationInfo(runningAppProcessInfo.processName, 0);
                     }
                     if (appInfo != null) {
+                        if (appInfo.packageName.equals(getPackageName())) {
+                            continue;
+                        }
                         appProcessInfo.isSystem = (appInfo.flags & ApplicationInfo.FLAG_SYSTEM)
                                 != 0;
 
@@ -159,6 +163,9 @@ public class CoreService
                                                     runningAppProcessInfo.pid,
                                                     runningAppProcessInfo.uid);
                 LogCat.d(runningAppProcessInfo.name);
+                if (runningAppProcessInfo.getPackageName().equals(getPackageName())) {
+                    continue;
+                }
                 try {
                     ApplicationInfo appInfo;
                     if (runningAppProcessInfo.name.contains(":")) {

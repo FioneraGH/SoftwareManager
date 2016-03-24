@@ -49,153 +49,13 @@ public class AppUtil {
         context.startActivity(intent);
     }
 
-    public static boolean isServiceRunning(Context context, String className) {
-        boolean isRunning = false;
-        ActivityManager activityManager = (ActivityManager) context
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        List<RunningServiceInfo> servicesList = activityManager
-                .getRunningServices(Integer.MAX_VALUE);
-        for (RunningServiceInfo si : servicesList) {
-            if (className.equals(si.service.getClassName())) {
-                isRunning = true;
-            }
-        }
-        return isRunning;
-    }
-
-    public static boolean stopRunningService(Context context, String className) {
-        Intent intent_service = null;
-        boolean ret = false;
-        try {
-            intent_service = new Intent(context, Class.forName(className));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (intent_service != null) {
-            ret = context.stopService(intent_service);
-        }
-        return ret;
-    }
-
-    /**
-     * 描述：执行命令.
-     *
-     * @param command
-     * @param workdirectory
-     * @return
-     */
-    public static String runCommand(String[] command, String workdirectory) {
-        String result = "";
-        LogCat.d("#" + command);
-        try {
-            ProcessBuilder builder = new ProcessBuilder(command);
-            // set working directory
-            if (workdirectory != null) {
-                builder.directory(new File(workdirectory));
-            }
-            builder.redirectErrorStream(true);
-            Process process = builder.start();
-            InputStream in = process.getInputStream();
-            byte[] buffer = new byte[1024];
-            while (in.read(buffer) != -1) {
-                String str = new String(buffer);
-                result = result + str;
-            }
-            in.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    /**
-     * 描述：运行脚本.
-     *
-     * @param script
-     * @return
-     */
-    public static String runScript(String script) {
-        String sRet = "";
-        try {
-            final Process m_process = Runtime.getRuntime().exec(script);
-            final StringBuilder sbread = new StringBuilder();
-            Thread tout = new Thread(new Runnable() {
-                public void run() {
-                    BufferedReader bufferedReader = new BufferedReader(
-                            new InputStreamReader(m_process.getInputStream()), 8192);
-                    String ls_1 = null;
-                    try {
-                        while ((ls_1 = bufferedReader.readLine()) != null) {
-                            sbread.append(ls_1).append("\n");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            bufferedReader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-            tout.start();
-
-            final StringBuilder sberr = new StringBuilder();
-            Thread terr = new Thread(new Runnable() {
-                public void run() {
-                    BufferedReader bufferedReader = new BufferedReader(
-                            new InputStreamReader(m_process.getErrorStream()), 8192);
-                    String ls_1 = null;
-                    try {
-                        while ((ls_1 = bufferedReader.readLine()) != null) {
-                            sberr.append(ls_1).append("\n");
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            bufferedReader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            });
-            terr.start();
-
-            int retvalue = m_process.waitFor();
-            while (tout.isAlive()) {
-                Thread.sleep(50);
-            }
-            if (terr.isAlive()) {
-                terr.interrupt();
-            }
-            String stdout = sbread.toString();
-            String stderr = sberr.toString();
-            sRet = stdout + stderr;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return sRet;
-    }
-
-    /**
-     * 应用程序运行命令获取 Root权限，设备必须已破解(获得ROOT权限)
-     *
-     * @return 应用程序是/否获取Root权限
-     */
     public static boolean getRootPermission(Context context) {
-        String packageCodePath = context.getPackageCodePath();
-        Process process = null;
         DataOutputStream os = null;
         try {
-            String cmd = "chmod 777 " + packageCodePath;
-            process = Runtime.getRuntime().exec("su");
+            Process process = Runtime.getRuntime().exec("su");
             os = new DataOutputStream(process.getOutputStream());
-            os.writeBytes(cmd + "\n");
             os.writeBytes("touch /sdcard/fionera_root\n");
+            os.writeBytes("chmod 777 /sdcard/fionera_root\n");
             os.writeBytes("exit\n");
             os.flush();
             process.waitFor();
@@ -206,7 +66,6 @@ public class AppUtil {
                 if (os != null) {
                     os.close();
                 }
-                process.destroy();
             } catch (Exception e) {
                 e.printStackTrace();
             }

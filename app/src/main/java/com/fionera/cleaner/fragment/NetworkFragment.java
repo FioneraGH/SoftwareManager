@@ -9,10 +9,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ListAdapter;
@@ -27,15 +29,35 @@ import com.fionera.cleaner.utils.ShowToast;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class NetworkFragment
         extends Fragment
-        implements CompoundButton.OnCheckedChangeListener{
+        implements CompoundButton.OnCheckedChangeListener {
 
     private Context mContext;
     private ProgressDialog progress = null;
-    private ListView listview;
+    @Bind(R.id.lv_network_manage)
+    ListView listview;
+
+
+    @OnClick({R.id.fab_network_show_rules, R.id.btn_network_purge_rules, R.id
+            .btn_network_apply_rules})
+    void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fab_network_show_rules:
+                showRules();
+                break;
+            case R.id.btn_network_purge_rules:
+                purgeRules();
+                break;
+            case R.id.btn_network_apply_rules:
+                applyOrSaveRules();
+                break;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -43,9 +65,7 @@ public class NetworkFragment
         mContext = getActivity();
         View view = inflater.inflate(R.layout.fragment_network, container, false);
         ButterKnife.bind(this, view);
-        checkPreferences();
         DroidWallApi.assertBinaries(mContext, true);
-        listview = (ListView) view.findViewById(R.id.lv_network_manage);
         DroidWallApi.applications = null;
         showOrLoadApplications();
         return view;
@@ -55,31 +75,6 @@ public class NetworkFragment
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
-    }
-
-    /**
-     * Check if the stored preferences are OK
-     */
-    private void checkPreferences() {
-        final SharedPreferences prefs = mContext.getSharedPreferences(DroidWallApi.PREFS_NAME, 0);
-        final Editor editor = prefs.edit();
-        boolean changed = false;
-        if (prefs.getString(DroidWallApi.PREF_MODE, "").length() == 0) {
-            editor.putString(DroidWallApi.PREF_MODE, DroidWallApi.MODE_WHITELIST);
-            changed = true;
-        }
-        /* delete the old preference names */
-        if (prefs.contains("AllowedUids")) {
-            editor.remove("AllowedUids");
-            changed = true;
-        }
-        if (prefs.contains("Interfaces")) {
-            editor.remove("Interfaces");
-            changed = true;
-        }
-        if (changed) {
-            editor.commit();
-        }
     }
 
     private void showOrLoadApplications() {
@@ -105,7 +100,8 @@ public class NetworkFragment
         Arrays.sort(apps, new Comparator<DroidApp>() {
             @Override
             public int compare(DroidApp droidApp1, DroidApp droidApp2) {
-                if ((droidApp1.selected_wifi | droidApp1.selected_3g) == (droidApp2.selected_wifi | droidApp2.selected_3g)) {
+                if ((droidApp1.selected_wifi | droidApp1.selected_3g) == (droidApp2.selected_wifi
+                        | droidApp2.selected_3g)) {
                     return droidApp1.names[0].compareTo(droidApp2.names[0]);
                 }
                 if (droidApp1.selected_wifi || droidApp1.selected_3g) {
@@ -115,7 +111,8 @@ public class NetworkFragment
             }
         });
         final LayoutInflater inflater = LayoutInflater.from(mContext);
-        final ListAdapter adapter = new ArrayAdapter<DroidApp>(mContext, R.layout.listview_network_item,
+        final ListAdapter adapter = new ArrayAdapter<DroidApp>(mContext,
+                                                               R.layout.listview_network_item,
                                                                R.id.tv_package_info, apps) {
 
             @Override
@@ -151,22 +148,9 @@ public class NetworkFragment
         listview.setAdapter(adapter);
     }
 
-    private void disableOrEnable() {
-        final boolean enabled = !DroidWallApi.isEnabled(mContext);
-        DroidWallApi.setEnabled(mContext, enabled);
-        if (enabled) {
-            applyOrSaveRules();
-        } else {
-            purgeRules();
-        }
-    }
-
     private void applyOrSaveRules() {
         final Handler handler;
-        final boolean enabled = DroidWallApi.isEnabled(mContext);
-        progress = ProgressDialog.show(mContext, "Working...",
-                                       (enabled ? "Applying" : "Saving") + " iptables rules.",
-                                       true);
+        progress = ProgressDialog.show(mContext, "请稍候...", "应用IpTables规则中", true);
         handler = new Handler() {
             public void handleMessage(Message msg) {
                 if (progress != null) {
@@ -175,13 +159,8 @@ public class NetworkFragment
                 if (!DroidWallApi.hasRootAccess(mContext, true)) {
                     return;
                 }
-                if (enabled) {
-                    if (DroidWallApi.applyIpTablesRules(mContext, true)) {
-                        ShowToast.show("规则已应用");
-                    }
-                } else {
-                    DroidWallApi.saveRules(mContext);
-                    ShowToast.show("规则已保存");
+                if (DroidWallApi.applyIpTablesRules(mContext, true)) {
+                    ShowToast.show("规则已应用");
                 }
             }
         };
@@ -190,7 +169,7 @@ public class NetworkFragment
 
     private void purgeRules() {
         final Handler handler;
-        progress = ProgressDialog.show(mContext, "Working...", "Deleting iptables rules.", true);
+        progress = ProgressDialog.show(mContext, "请稍候...", "删除IpTables规则中", true);
         handler = new Handler() {
             public void handleMessage(Message msg) {
                 if (progress != null) {
@@ -209,7 +188,7 @@ public class NetworkFragment
 
     private void showRules() {
         final Handler handler;
-        progress = ProgressDialog.show(mContext, "Working...", "Please wait", true);
+        progress = ProgressDialog.show(mContext, "请稍候...", "正在获取IpTables规则", true);
         handler = new Handler() {
             public void handleMessage(Message msg) {
                 if (progress != null) {

@@ -1,13 +1,12 @@
 package com.fionera.cleaner.utils;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.fionera.cleaner.R;
@@ -25,52 +24,28 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class DroidWallApi {
-    /**
-     * special application UID used to indicate "any application"
-     */
+
     public static final int SPECIAL_UID_ANY = -10;
-    /**
-     * root script filename
-     */
     private static final String SCRIPT_FILE = "droid_wall.sh";
 
-    // Preferences
-    public static final String PREFS_NAME = "DroidWallPrefs";
+    public static final String PREFS_CACHE = "DroidWallAppCachePrefs";
+    public static final String PREFS_CONFIG = "DroidWallConfigPrefs";
     public static final String PREF_3G_UIDS = "AllowedUids3G";
     public static final String PREF_WIFI_UIDS = "AllowedUidsWifi";
-    public static final String PREF_MODE = "BlockMode";
-    public static final String PREF_ENABLED = "Enabled";
-    public static final String PREF_LOGENABLED = "LogEnabled";
-    // Modes
-    public static final String MODE_WHITELIST = "whitelist";
-    public static final String MODE_BLACKLIST = "blacklist";
-    // Messages
-    public static final String STATUS_CHANGED_MSG = "com.googlecode.droidwall.intent.action" + "" +
-            ".STATUS_CHANGED";
-    public static final String STATUS_EXTRA = "com.googlecode.droidwall.intent.extra.STATUS";
 
-    // Cached applications
     public static DroidApp applications[] = null;
-    // Do we have root access?
-    private static boolean hasroot = false;
+    private static boolean hasRoot = false;
 
-    public static void alert(Context ctx, CharSequence msg) {
+    private static void alert(Context ctx, CharSequence msg) {
         if (ctx != null) {
             new AlertDialog.Builder(ctx).setNeutralButton(android.R.string.ok, null).setMessage(msg)
                     .show();
         }
     }
 
-    /**
-     * Create the generic shell script header used to determine which iptables binary to use.
-     *
-     * @param ctx context
-     * @return script header
-     */
     private static String scriptHeader(Context ctx) {
         final String dir = ctx.getCacheDir().getAbsolutePath();
-        return "" +
-                "IPTABLES=iptables\n" +
+        return "IPTABLES=iptables\n" +
                 "BUSYBOX=busybox\n" +
                 "GREP=grep\n" +
                 "ECHO=echo\n" +
@@ -102,47 +77,75 @@ public class DroidWallApi {
                 "	IPTABLES=" + dir + "/iptables_g1\n" +
                 "elif " + dir + "/iptables_n1 --version >/dev/null 2>/dev/null ; then\n" +
                 "	IPTABLES=" + dir + "/iptables_n1\n" +
-                "fi\n" +
-                "";
+                "fi\n";
     }
 
-    /**
-     * Copies a raw resource file, given its ID to the given location
-     *
-     * @param ctx   context
-     * @param resid resource id
-     * @param file  destination file
-     * @param mode  file permissions (E.g.: "755")
-     * @throws IOException          on error
-     * @throws InterruptedException when interrupted
-     */
-    private static void copyRawFile(Context ctx, int resid, File file,
-                                    String mode) throws IOException, InterruptedException {
-        final String abspath = file.getAbsolutePath();
-        // Write the iptables binary
-        final FileOutputStream out = new FileOutputStream(file);
-        final InputStream is = ctx.getResources().openRawResource(resid);
-        byte buf[] = new byte[1024];
-        int len;
-        while ((len = is.read(buf)) > 0) {
-            out.write(buf, 0, len);
+    public static boolean applyIpTablesRules(Context ctx, boolean showErrors) {
+        if (ctx == null) {
+            return false;
         }
-        out.close();
-        is.close();
-        // Change the permissions
-        Runtime.getRuntime().exec("chmod " + mode + " " + abspath).waitFor();
+        saveRules(ctx);
+        return applySavedIpTablesRules(ctx, showErrors);
     }
 
     /**
-     * Purge and re-add all rules (internal implementation).
+     * 单纯的保存规则
      *
-     * @param ctx        application context (mandatory)
-     * @param uidsWifi   list of selected UIDs for WIFI to allow or disallow (depending on the
-     *                   working mode)
-     * @param uids3g     list of selected UIDs for 2G/3G to allow or disallow (depending on the
-     *                   working mode)
-     * @param showErrors indicates if errors should be alerted
+     * @param ctx
      */
+    public static void saveRules(Context ctx) {
+        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_CONFIG, 0);
+        final DroidApp[] apps = getApps(ctx);
+        final StringBuilder newuids_wifi = new StringBuilder();
+        final StringBuilder newuids_3g = new StringBuilder();
+        if (apps != null) {
+            for (DroidApp app : apps) {
+                if (app.selected_wifi) {
+                    if (newuids_wifi.length() != 0) {
+                        newuids_wifi.append('|');
+                    }
+                    newuids_wifi.append(app.uid);
+                }
+                if (app.selected_3g) {
+                    if (newuids_3g.length() != 0) {
+                        newuids_3g.append('|');
+                    }
+                    newuids_3g.append(app.uid);
+                }
+            }
+            final Editor edit = prefs.edit();
+            edit.putString(PREF_WIFI_UIDS, newuids_wifi.toString());
+            edit.putString(PREF_3G_UIDS, newuids_3g.toString());
+            edit.apply();
+        }
+    }
+
+    public static boolean applySavedIpTablesRules(Context ctx, boolean showErrors) {
+        if (ctx == null) {
+            return false;
+        }
+        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_CONFIG, 0);
+        final String savedUids_wifi = prefs.getString(PREF_WIFI_UIDS, "");
+        final String savedUids_3g = prefs.getString(PREF_3G_UIDS, "");
+        final List<Integer> uids_wifi = new LinkedList<>();
+        if (savedUids_wifi.length() > 0) {
+            for (String uid_wifi : savedUids_wifi.split("|")) {
+                if (!uid_wifi.equals("")) {
+                    uids_wifi.add(Integer.parseInt(uid_wifi));
+                }
+            }
+        }
+        final List<Integer> uids_3g = new LinkedList<>();
+        if (savedUids_3g.length() > 0) {
+            for (String uid_3g : savedUids_3g.split("|")) {
+                if (!uid_3g.equals("")) {
+                    uids_3g.add(Integer.parseInt(uid_3g));
+                }
+            }
+        }
+        return applyIpTablesRulesImpl(ctx, uids_wifi, uids_3g, showErrors);
+    }
+
     private static boolean applyIpTablesRulesImpl(Context ctx, List<Integer> uidsWifi,
                                                   List<Integer> uids3g, boolean showErrors) {
         if (ctx == null) {
@@ -151,18 +154,11 @@ public class DroidWallApi {
         assertBinaries(ctx, showErrors);
         final String ITFS_WIFI[] = {"tiwlan+", "wlan+", "eth+"};
         final String ITFS_3G[] = {"rmnet+", "pdp+", "ppp+", "uwbr+"};
-        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, 0);
-        final boolean whitelist = prefs.getString(PREF_MODE, MODE_WHITELIST).equals(MODE_WHITELIST);
-        final boolean blacklist = !whitelist;
-        final boolean logenabled = ctx.getSharedPreferences(PREFS_NAME, 0)
-                .getBoolean(PREF_LOGENABLED, false);
 
         final StringBuilder script = new StringBuilder();
         try {
-            int code;
             script.append(scriptHeader(ctx));
-            script.append("" +
-                                  "$IPTABLES --version || exit 1\n" +
+            script.append("$IPTABLES --version || exit 1\n" +
                                   "# Create the droidwall chains if necessary\n" +
                                   "$IPTABLES -L droidwall >/dev/null 2>/dev/null || $IPTABLES " +
                                   "--new droidwall || exit 2\n" +
@@ -181,213 +177,63 @@ public class DroidWallApi {
                                   "$IPTABLES -F droidwall-wifi || exit 9\n" +
                                   "$IPTABLES -F droidwall-reject || exit 10\n" +
                                   "");
-            // Check if logging is enabled
-            if (logenabled) {
-                script.append("" +
-                                      "# Create the log and reject rules (ignore errors on the " +
-                                      "LOG target just in case it is not available)\n" +
-                                      "$IPTABLES -A droidwall-reject -j LOG --log-prefix " +
-                                      "\"[DROIDWALL] \" --log-uid\n" +
-                                      "$IPTABLES -A droidwall-reject -j REJECT || exit 11\n" +
-                                      "");
-            } else {
-                script.append("" +
-                                      "# Create the reject rule (log disabled)\n" +
-                                      "$IPTABLES -A droidwall-reject -j REJECT || exit 11\n" +
-                                      "");
-            }
-            if (whitelist && logenabled) {
-                script.append(
-                        "# Allow DNS lookups on white-list for a better logging (ignore errors)\n");
-                script.append("$IPTABLES -A droidwall -p udp --dport 53 -j RETURN\n");
-            }
+            script.append("# Create the reject rule (log disabled)\n" +
+                                  "$IPTABLES -A droidwall-reject -j REJECT || exit 11\n" +
+                                  "");
             script.append("# Main rules (per interface)\n");
-            for (final String itf : ITFS_3G) {
-                script.append("$IPTABLES -A droidwall -o ").append(itf)
-                        .append(" -j droidwall-3g || exit\n");
-            }
-            for (final String itf : ITFS_WIFI) {
+            for (String itf : ITFS_WIFI) {
                 script.append("$IPTABLES -A droidwall -o ").append(itf)
                         .append(" -j droidwall-wifi || exit\n");
             }
+            for (String itf : ITFS_3G) {
+                script.append("$IPTABLES -A droidwall -o ").append(itf)
+                        .append(" -j droidwall-3g || exit\n");
+            }
 
             script.append("# Filtering rules\n");
-            final String targetRule = (whitelist ? "RETURN" : "droidwall-reject");
-            final boolean any_3g = uids3g.indexOf(SPECIAL_UID_ANY) >= 0;
-            final boolean any_wifi = uidsWifi.indexOf(SPECIAL_UID_ANY) >= 0;
-            if (whitelist && !any_wifi) {
-                // When "white listing" wifi, we need to ensure that the dhcp and wifi users are
-                // allowed
-                int uid = android.os.Process.getUidForName("dhcp");
-                if (uid != -1) {
-                    script.append("# dhcp user\n");
-                    script.append("$IPTABLES -A droidwall-wifi -m owner --uid-owner ").append(uid)
-                            .append(" -j RETURN || exit\n");
-                }
-                uid = android.os.Process.getUidForName("wifi");
-                if (uid != -1) {
-                    script.append("# wifi user\n");
-                    script.append("$IPTABLES -A droidwall-wifi -m owner --uid-owner ").append(uid)
-                            .append(" -j RETURN || exit\n");
-                }
-            }
-            if (any_3g) {
-                if (blacklist) {
-                    /* block any application on this interface */
-                    script.append("$IPTABLES -A droidwall-3g -j ").append(targetRule)
-                            .append(" || exit\n");
-                }
+            final String targetRule = ("droidwall-reject");
+            if (uidsWifi.indexOf(SPECIAL_UID_ANY) >= 0) {
+                script.append("$IPTABLES -A droidwall-wifi -j ").append(targetRule)
+                        .append(" || exit\n");
             } else {
-                /* release/block individual applications on this interface */
-                for (final Integer uid : uids3g) {
-                    script.append("$IPTABLES -A droidwall-3g -m owner --uid-owner ").append(uid)
-                            .append(" -j ").append(targetRule).append(" || exit\n");
-                }
-            }
-            if (any_wifi) {
-                if (blacklist) {
-					/* block any application on this interface */
-                    script.append("$IPTABLES -A droidwall-wifi -j ").append(targetRule)
-                            .append(" || exit\n");
-                }
-            } else {
-				/* release/block individual applications on this interface */
                 for (final Integer uid : uidsWifi) {
                     script.append("$IPTABLES -A droidwall-wifi -m owner --uid-owner ").append(uid)
                             .append(" -j ").append(targetRule).append(" || exit\n");
                 }
             }
-            if (whitelist) {
-                if (!any_3g) {
-                    script.append("$IPTABLES -A droidwall-3g -j droidwall-reject || exit\n");
-                }
-                if (!any_wifi) {
-                    script.append("$IPTABLES -A droidwall-wifi -j droidwall-reject || exit\n");
+            if (uids3g.indexOf(SPECIAL_UID_ANY) >= 0) {
+                script.append("$IPTABLES -A droidwall-3g -j ").append(targetRule)
+                        .append(" || exit\n");
+            } else {
+                for (final Integer uid : uids3g) {
+                    script.append("$IPTABLES -A droidwall-3g -m owner --uid-owner ").append(uid)
+                            .append(" -j ").append(targetRule).append(" || exit\n");
                 }
             }
+
             final StringBuilder res = new StringBuilder();
-            code = runScriptAsRoot(ctx, script.toString(), res);
+            int code = runScriptAsRoot(ctx, script.toString(), res);
             if (showErrors && code != 0) {
                 String msg = res.toString();
                 Log.e("DroidWall", msg);
                 // Remove unnecessary help message from output
-                if (msg.indexOf(
-                        "\nTry `iptables -h' or 'iptables --help' for more information.") != -1) {
+                if (msg.contains(
+                        "\nTry `iptables -h' or 'iptables --help' for more information.")) {
                     msg = msg.replace(
                             "\nTry `iptables -h' or 'iptables --help' for more information.", "");
                 }
-                alert(ctx,
-                      "Error applying iptables rules. Exit code: " + code + "\n\n" + msg.trim());
+                alert(ctx, "应用规则失败，错误码: " + code + "\n\n" + msg.trim());
             } else {
                 return true;
             }
         } catch (Exception e) {
             if (showErrors) {
-                alert(ctx, "error refreshing iptables: " + e);
+                alert(ctx, "应用规则失败: " + e);
             }
         }
         return false;
     }
 
-    /**
-     * Purge and re-add all saved rules (not in-memory ones).
-     * This is much faster than just calling "applyIpTablesRules", since it don't need to read
-     * installed applications.
-     *
-     * @param ctx        application context (mandatory)
-     * @param showErrors indicates if errors should be alerted
-     */
-    public static boolean applySavedIpTablesRules(Context ctx, boolean showErrors) {
-        if (ctx == null) {
-            return false;
-        }
-        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, 0);
-        final String savedUids_wifi = prefs.getString(PREF_WIFI_UIDS, "");
-        final String savedUids_3g = prefs.getString(PREF_3G_UIDS, "");
-        final List<Integer> uids_wifi = new LinkedList<Integer>();
-        if (savedUids_wifi.length() > 0) {
-            // Check which applications are allowed on wifi
-            final StringTokenizer tok = new StringTokenizer(savedUids_wifi, "|");
-            while (tok.hasMoreTokens()) {
-                final String uid = tok.nextToken();
-                if (!uid.equals("")) {
-                    try {
-                        uids_wifi.add(Integer.parseInt(uid));
-                    } catch (Exception ex) {
-                    }
-                }
-            }
-        }
-        final List<Integer> uids_3g = new LinkedList<Integer>();
-        if (savedUids_3g.length() > 0) {
-            // Check which applications are allowed on 2G/3G
-            final StringTokenizer tok = new StringTokenizer(savedUids_3g, "|");
-            while (tok.hasMoreTokens()) {
-                final String uid = tok.nextToken();
-                if (!uid.equals("")) {
-                    try {
-                        uids_3g.add(Integer.parseInt(uid));
-                    } catch (Exception ex) {
-                    }
-                }
-            }
-        }
-        return applyIpTablesRulesImpl(ctx, uids_wifi, uids_3g, showErrors);
-    }
-
-    /**
-     * Purge and re-add all rules.
-     *
-     * @param ctx        application context (mandatory)
-     * @param showErrors indicates if errors should be alerted
-     */
-    public static boolean applyIpTablesRules(Context ctx, boolean showErrors) {
-        if (ctx == null) {
-            return false;
-        }
-        saveRules(ctx);
-        return applySavedIpTablesRules(ctx, showErrors);
-    }
-
-    /**
-     * Save current rules using the preferences storage.
-     *
-     * @param ctx application context (mandatory)
-     */
-    public static void saveRules(Context ctx) {
-        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, 0);
-        final DroidApp[] apps = getApps(ctx);
-        // Builds a pipe-separated list of names
-        final StringBuilder newuids_wifi = new StringBuilder();
-        final StringBuilder newuids_3g = new StringBuilder();
-        for (int i = 0; i < apps.length; i++) {
-            if (apps[i].selected_wifi) {
-                if (newuids_wifi.length() != 0) {
-                    newuids_wifi.append('|');
-                }
-                newuids_wifi.append(apps[i].uid);
-            }
-            if (apps[i].selected_3g) {
-                if (newuids_3g.length() != 0) {
-                    newuids_3g.append('|');
-                }
-                newuids_3g.append(apps[i].uid);
-            }
-        }
-        // save the new list of UIDs
-        final Editor edit = prefs.edit();
-        edit.putString(PREF_WIFI_UIDS, newuids_wifi.toString());
-        edit.putString(PREF_3G_UIDS, newuids_3g.toString());
-        edit.commit();
-    }
-
-    /**
-     * Purge all iptables rules.
-     *
-     * @param ctx        mandatory context
-     * @param showErrors indicates if errors should be alerted
-     * @return true if the rules were purged
-     */
     public static boolean purgeIpTables(Context ctx, boolean showErrors) {
         StringBuilder res = new StringBuilder();
         try {
@@ -397,26 +243,19 @@ public class DroidWallApi {
                     "$IPTABLES -F droidwall-reject\n" +
                     "$IPTABLES -F droidwall-3g\n" +
                     "$IPTABLES -F droidwall-wifi\n", res);
-            if (code == -1) {
-                if (showErrors) {
-                    alert(ctx, "error purging iptables. exit code: " + code + "\n" + res);
-                }
+            if (showErrors && code != 0) {
+                alert(ctx, "移除规则失败，错误码: " + code + "\n" + res);
                 return false;
             }
             return true;
         } catch (Exception e) {
             if (showErrors) {
-                alert(ctx, "error purging iptables: " + e);
+                alert(ctx, "移除规则失败: " + e);
             }
             return false;
         }
     }
 
-    /**
-     * Display iptables rules output
-     *
-     * @param ctx application context
-     */
     public static void showIpTablesRules(Context ctx) {
         try {
             final StringBuilder res = new StringBuilder();
@@ -425,7 +264,7 @@ public class DroidWallApi {
                     "$IPTABLES -L -v\n", res);
             alert(ctx, res);
         } catch (Exception e) {
-            alert(ctx, "error: " + e);
+            alert(ctx, "获取错误: " + e);
         }
     }
 
@@ -438,7 +277,7 @@ public class DroidWallApi {
             // return cached instance
             return applications;
         }
-        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, 0);
+        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_CACHE, 0);
         // allowed application names separated by pipe '|' (persisted)
         final String savedUids_wifi = prefs.getString(PREF_WIFI_UIDS, "");
         final String savedUids_3g = prefs.getString(PREF_3G_UIDS, "");
@@ -524,9 +363,9 @@ public class DroidWallApi {
                 }
             }
             if (changed) {
-                edit.commit();
+                edit.apply();
             }
-			/* add special applications to the list */
+            /* add special applications to the list */
             final DroidApp special[] = {new DroidApp(SPECIAL_UID_ANY,
                                                      "(Any application) - Same as selecting all "
                                                              + "applications",
@@ -536,8 +375,8 @@ public class DroidWallApi {
                     android.os.Process.getUidForName("media"), "Media server", false,
                     false), new DroidApp(android.os.Process.getUidForName("vpn"), "VPN networking",
                                          false, false),};
-            for (int i = 0; i < special.length; i++) {
-                app = special[i];
+            for (DroidApp aSpecial : special) {
+                app = aSpecial;
                 if (app.uid != -1 && !map.containsKey(app.uid)) {
                     // check if this application is allowed
                     if (Arrays.binarySearch(selected_wifi, app.uid) >= 0) {
@@ -556,27 +395,19 @@ public class DroidWallApi {
             }
             return applications;
         } catch (Exception e) {
-            alert(ctx, "error: " + e);
+            alert(ctx, "错误: " + e);
         }
         return null;
     }
 
-    /**
-     * Check if we have root access
-     *
-     * @param ctx        mandatory context
-     * @param showErrors indicates if errors should be alerted
-     * @return boolean true if we have root
-     */
     public static boolean hasRootAccess(Context ctx, boolean showErrors) {
-        if (hasroot) {
+        if (hasRoot) {
             return true;
         }
         final StringBuilder res = new StringBuilder();
         try {
-            // Run an empty script just to check root access
             if (runScriptAsRoot(ctx, "exit 0", res) == 0) {
-                hasroot = true;
+                hasRoot = true;
                 return true;
             }
         } catch (Exception e) {
@@ -586,6 +417,15 @@ public class DroidWallApi {
             alert(ctx, "获取Root权限失败");
         }
         return false;
+    }
+
+    public static int runScriptAsRoot(Context ctx, String script,
+                                      StringBuilder res) throws IOException {
+        return runScriptAsRoot(ctx, script, res, 40000);
+    }
+
+    public static int runScriptAsRoot(Context ctx, String script, StringBuilder res, long timeout) {
+        return runScript(ctx, script, res, timeout, true);
     }
 
     /**
@@ -598,9 +438,9 @@ public class DroidWallApi {
      * @return the script exit code
      */
     public static int runScript(Context ctx, String script, StringBuilder res, long timeout,
-                                boolean asroot) {
+                                boolean asRoot) {
         final File file = new File(ctx.getCacheDir(), SCRIPT_FILE);
-        final ScriptRunner runner = new ScriptRunner(file, script, res, asroot);
+        final ScriptRunner runner = new ScriptRunner(file, script, res, asRoot);
         runner.start();
         try {
             if (timeout > 0) {
@@ -609,82 +449,29 @@ public class DroidWallApi {
                 runner.join();
             }
             if (runner.isAlive()) {
-                // Timed-out
                 runner.interrupt();
                 runner.join(150);
-                runner.destroy();
                 runner.join(50);
             }
         } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
-        return runner.exitcode;
+        return runner.exitCode;
     }
 
-    /**
-     * Runs a script as root (multiple commands separated by "\n").
-     *
-     * @param ctx     mandatory context
-     * @param script  the script to be executed
-     * @param res     the script output response (stdout + stderr)
-     * @param timeout timeout in milliseconds (-1 for none)
-     * @return the script exit code
-     */
-    public static int runScriptAsRoot(Context ctx, String script, StringBuilder res, long timeout) {
-        return runScript(ctx, script, res, timeout, true);
-    }
-
-    /**
-     * Runs a script as root (multiple commands separated by "\n") with a default timeout of 20
-     * seconds.
-     *
-     * @param ctx    mandatory context
-     * @param script the script to be executed
-     * @param res    the script output response (stdout + stderr)
-     * @return the script exit code
-     * @throws IOException on any error executing the script, or writing it to disk
-     */
-    public static int runScriptAsRoot(Context ctx, String script,
-                                      StringBuilder res) throws IOException {
-        return runScriptAsRoot(ctx, script, res, 40000);
-    }
-
-    /**
-     * Runs a script as a regular user (multiple commands separated by "\n") with a default
-     * timeout of 20 seconds.
-     *
-     * @param ctx    mandatory context
-     * @param script the script to be executed
-     * @param res    the script output response (stdout + stderr)
-     * @return the script exit code
-     * @throws IOException on any error executing the script, or writing it to disk
-     */
-    public static int runScript(Context ctx, String script, StringBuilder res) throws IOException {
-        return runScript(ctx, script, res, 40000, false);
-    }
-
-    /**
-     * Asserts that the binary files are installed in the cache directory.
-     *
-     * @param ctx        context
-     * @param showErrors indicates if errors should be alerted
-     * @return false if the binary files could not be installed
-     */
     public static boolean assertBinaries(Context ctx, boolean showErrors) {
         boolean changed = false;
         try {
-            // Check iptables_g1
             File file = new File(ctx.getCacheDir(), "iptables_g1");
             if (!file.exists()) {
                 copyRawFile(ctx, R.raw.iptables_g1, file, "755");
                 changed = true;
             }
-            // Check iptables_n1
             file = new File(ctx.getCacheDir(), "iptables_n1");
             if (!file.exists()) {
                 copyRawFile(ctx, R.raw.iptables_n1, file, "755");
                 changed = true;
             }
-            // Check busybox
             file = new File(ctx.getCacheDir(), "busybox_g1");
             if (!file.exists()) {
                 copyRawFile(ctx, R.raw.busybox_g1, file, "755");
@@ -695,45 +482,99 @@ public class DroidWallApi {
             }
         } catch (Exception e) {
             if (showErrors) {
-                alert(ctx, "Error installing binary files: " + e);
+                alert(ctx, "安装网络管理二进制文件失败: " + e);
             }
             return false;
         }
         return true;
     }
 
-    /**
-     * Check if the firewall is enabled
-     *
-     * @param ctx mandatory context
-     * @return boolean
-     */
-    public static boolean isEnabled(Context ctx) {
-        return ctx != null && ctx.getSharedPreferences(PREFS_NAME, 0)
-                .getBoolean(PREF_ENABLED, true);
+    private static void copyRawFile(Context ctx, int resid, File file,
+                                    String mode) throws IOException, InterruptedException {
+        final String absPath = file.getAbsolutePath();
+        final FileOutputStream out = new FileOutputStream(file);
+        final InputStream is = ctx.getResources().openRawResource(resid);
+        byte buf[] = new byte[1024];
+        int len;
+        while ((len = is.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        out.close();
+        is.close();
+        Runtime.getRuntime().exec("chmod " + mode + " " + absPath).waitFor();
     }
 
     /**
-     * Defines if the firewall is enabled and broadcasts the new status
-     *
-     * @param ctx     mandatory context
-     * @param enabled enabled flag
+     * Internal thread used to execute scripts (as root or not).
      */
-    public static void setEnabled(Context ctx, boolean enabled) {
-        if (ctx == null) {
-            return;
+    private static final class ScriptRunner
+            extends Thread {
+        private final File file;
+        private final String script;
+        private final StringBuilder res;
+        private final boolean asRoot;
+
+        public int exitCode = -1;
+        private Process exec;
+
+        public ScriptRunner(File file, String script, StringBuilder res, boolean asRoot) {
+            this.file = file;
+            this.script = script;
+            this.res = res;
+            this.asRoot = asRoot;
         }
-        final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_NAME, 0);
-        if (prefs.getBoolean(PREF_ENABLED, true) == enabled) {
-            return;
+
+        @Override
+        public void run() {
+            try {
+                final String absolutePath = file.getAbsolutePath();
+                Runtime.getRuntime().exec("chmod 777 " + absolutePath).waitFor();
+                final OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(file));
+                out.write("#!/system/bin/sh\n");
+                out.write(script);
+                if (!script.endsWith("\n")) {
+                    out.write("\n");
+                }
+                out.write("exit\n");
+                out.flush();
+                out.close();
+                if (asRoot) {
+                    // Create the "su" request to run the script
+                    exec = Runtime.getRuntime().exec("su -c " + absolutePath);
+                } else {
+                    // Create the "sh" request to run the script
+                    exec = Runtime.getRuntime().exec("sh " + absolutePath);
+                }
+                InputStreamReader r = new InputStreamReader(exec.getInputStream());
+                final char buf[] = new char[1024];
+                int read;
+                // Consume the "stdout"
+                while ((read = r.read(buf)) != -1) {
+                    if (res != null) {
+                        res.append(buf, 0, read);
+                    }
+                }
+                // Consume the "stderr"
+                r = new InputStreamReader(exec.getErrorStream());
+                while ((read = r.read(buf)) != -1) {
+                    if (res != null) {
+                        res.append(buf, 0, read);
+                    }
+                }
+                // get the process exit code
+                if (exec != null) {
+                    this.exitCode = exec.waitFor();
+                }
+            } catch (InterruptedException ex) {
+                if (res != null) {
+                    res.append("\n操作超时");
+                }
+            } catch (Exception ex) {
+                if (res != null) {
+                    res.append("\n").append(ex);
+                }
+            }
         }
-        final Editor edit = prefs.edit();
-        edit.putBoolean(PREF_ENABLED, enabled);
-        edit.commit();
-		/* notify */
-        final Intent message = new Intent(DroidWallApi.STATUS_CHANGED_MSG);
-        message.putExtra(DroidWallApi.STATUS_EXTRA, enabled);
-        ctx.sendBroadcast(message);
     }
 
     public static final class DroidApp {
@@ -756,7 +597,7 @@ public class DroidWallApi {
         /**
          * toString cache
          */
-        public String tostr;
+        private String toString;
 
         public DroidApp() {
         }
@@ -773,10 +614,10 @@ public class DroidWallApi {
          */
         @Override
         public String toString() {
-            if (tostr == null) {
+            if (toString == null) {
                 final StringBuilder s = new StringBuilder();
                 if (uid > 0) {
-                    s.append(uid + ": ");
+                    s.append(uid).append(": ");
                 }
                 for (int i = 0; i < names.length; i++) {
                     if (i != 0) {
@@ -785,94 +626,9 @@ public class DroidWallApi {
                     s.append(names[i]);
                 }
                 s.append("\n");
-                tostr = s.toString();
+                toString = s.toString();
             }
-            return tostr;
-        }
-    }
-
-    /**
-     * Internal thread used to execute scripts (as root or not).
-     */
-    private static final class ScriptRunner
-            extends Thread {
-        private final File file;
-        private final String script;
-        private final StringBuilder res;
-        private final boolean asroot;
-        public int exitcode = -1;
-        private Process exec;
-
-        /**
-         * Creates a new script runner.
-         *
-         * @param file   temporary script file
-         * @param script script to run
-         * @param res    response output
-         * @param asroot if true, executes the script as root
-         */
-        public ScriptRunner(File file, String script, StringBuilder res, boolean asroot) {
-            this.file = file;
-            this.script = script;
-            this.res = res;
-            this.asroot = asroot;
-        }
-
-        @Override
-        public void run() {
-            try {
-                file.createNewFile();
-                final String abspath = file.getAbsolutePath();
-                // make sure we have execution permission on the script file
-                Runtime.getRuntime().exec("chmod 777 " + abspath).waitFor();
-                // Write the script to be executed
-                final OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(file));
-                out.write("#!/system/bin/sh\n");
-                out.write(script);
-                if (!script.endsWith("\n")) {
-                    out.write("\n");
-                }
-                out.write("exit\n");
-                out.flush();
-                out.close();
-                if (this.asroot) {
-                    // Create the "su" request to run the script
-                    exec = Runtime.getRuntime().exec("su -c " + abspath);
-                } else {
-                    // Create the "sh" request to run the script
-                    exec = Runtime.getRuntime().exec("sh " + abspath);
-                }
-                InputStreamReader r = new InputStreamReader(exec.getInputStream());
-                final char buf[] = new char[1024];
-                int read;
-                // Consume the "stdout"
-                while ((read = r.read(buf)) != -1) {
-                    if (res != null) {
-                        res.append(buf, 0, read);
-                    }
-                }
-                // Consume the "stderr"
-                r = new InputStreamReader(exec.getErrorStream());
-                while ((read = r.read(buf)) != -1) {
-                    if (res != null) {
-                        res.append(buf, 0, read);
-                    }
-                }
-                // get the process exit code
-                if (exec != null) {
-                    this.exitcode = exec.waitFor();
-                }
-            } catch (InterruptedException ex) {
-                if (res != null) {
-                    res.append("\nOperation timed-out");
-                }
-            } catch (Exception ex) {
-                if (res != null) {
-                    res.append("\n" + ex);
-                }
-            } finally {
-                destroy();
-            }
+            return toString;
         }
     }
 }

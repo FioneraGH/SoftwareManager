@@ -21,7 +21,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:orientation="vertical">
 
         <RadioButton
@@ -31,11 +30,9 @@
             android:background="@drawable/sl_drawer_bg"
             android:button="@null"
             android:drawableLeft="@drawable/ic_drawer_home"
-            android:drawablePadding="15dp"
-            android:gravity="center_vertical|left"
-            android:paddingEnd="0dp"
-            android:paddingLeft="17dp"
-            android:paddingRight="0dp"
+            android:drawablePadding="16dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="24dp"
             android:text="首页"
             android:textSize="17sp"/>
 
@@ -45,11 +42,10 @@
             android:layout_height="60dp"
             android:background="@drawable/sl_drawer_bg"
             android:button="@null"
-            android:drawableLeft="@drawable/ic_drawer_home"
-            android:drawablePadding="15dp"
-            android:gravity="center_vertical|left"
-            android:paddingLeft="17dp"
-            android:paddingRight="0dp"
+            android:drawableLeft="@drawable/ic_drawer_network"
+            android:drawablePadding="16dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="24dp"
             android:text="网络控制"
             android:textSize="17sp"/>
 
@@ -60,10 +56,9 @@
             android:background="@drawable/sl_drawer_bg"
             android:button="@null"
             android:drawableLeft="@drawable/ic_drawer_settings"
-            android:drawablePadding="15dp"
-            android:gravity="center_vertical|left"
-            android:paddingLeft="17dp"
-            android:paddingRight="0dp"
+            android:drawablePadding="16dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="24dp"
             android:text="设置"
             android:textSize="17sp"/>
 

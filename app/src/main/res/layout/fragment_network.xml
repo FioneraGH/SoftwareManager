@@ -1,23 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/white"
-              android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/label_mode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:padding="8dp"
-        android:text="控制模式为黑名单模式[阻止选中软件]"
-        android:textSize="14sp"/>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:paddingBottom="8dp"
+        android:paddingLeft="12dp"
+        android:paddingTop="8dp">
 
         <ImageView
             android:id="@+id/img_wifi"
@@ -31,6 +26,22 @@
             android:layout_height="24dp"
             android:layout_marginLeft="8dp"
             android:src="@drawable/ic_eth_3g"/>
+
+        <TextView
+            android:id="@+id/label_mode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:text="黑名单模式[阻止选中软件]"
+            android:textSize="14sp"/>
+
+        <android.support.v7.widget.SwitchCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
     <ListView
@@ -41,6 +52,39 @@
         android:clipToPadding="false"
         android:padding="8dp"
         android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="none"/>
+        android:scrollbars="none"
+        tools:listitem="@layout/listview_network_item"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_network_purge_rules"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_blue_press"
+            android:gravity="center"
+            android:text="删除规则"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"/>
+
+        <android.support.v4.widget.Space
+            android:layout_width="1px"
+            android:layout_height="match_parent"/>
+
+        <Button
+            android:id="@+id/btn_network_apply_rules"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_blue_press"
+            android:gravity="center"
+            android:text="应用规则"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_large"/>
+    </LinearLayout>
 
 </LinearLayout>

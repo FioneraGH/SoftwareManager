@@ -134,7 +134,7 @@ public class CoreService
                     } else {
                         appProcessInfo.isSystem = true;
                         appProcessInfo.icon = ContextCompat
-                                .getDrawable(mContext, R.drawable.ic_launcher);
+                                .getDrawable(mContext, R.mipmap.ic_launcher);
                         appProcessInfo.appName = runningAppProcessInfo.processName;
                     }
                 } catch (PackageManager.NameNotFoundException e) {
@@ -174,7 +174,7 @@ public class CoreService
                     } else {
                         appProcessInfo.isSystem = true;
                         appProcessInfo.icon = ContextCompat
-                                .getDrawable(mContext, R.drawable.ic_launcher);
+                                .getDrawable(mContext, R.mipmap.ic_launcher);
                         appProcessInfo.appName = runningAppProcessInfo.name;
                     }
                 } catch (PackageManager.NameNotFoundException e) {

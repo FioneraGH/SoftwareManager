@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fionera.cleaner.R;
@@ -16,6 +18,8 @@ import com.fionera.cleaner.adapter.AutoStartAdapter;
 import com.fionera.cleaner.base.BaseFragment;
 import com.fionera.cleaner.bean.AutoStartInfo;
 import com.fionera.cleaner.utils.BootStartUtils;
+import com.fionera.cleaner.utils.DroidWallApi;
+import com.fionera.cleaner.utils.RvItemTouchListener;
 import com.fionera.cleaner.utils.ShellUtils;
 import com.fionera.cleaner.utils.ShowToast;
 
@@ -36,8 +40,8 @@ public class AutoStartFragment
     TextView tvTips;
     @Bind(R.id.btn_disable_all)
     Button btnDisable;
-    @Bind(R.id.listview)
-    ListView listView;
+    @Bind(R.id.rv_auto_start)
+    RecyclerView recyclerView;
     List<AutoStartInfo> isSystemAuto = null;
     List<AutoStartInfo> noSystemAuto = null;
 
@@ -88,12 +92,25 @@ public class AutoStartFragment
 
         if (position == 0) {
             mAutoStartAdapter = new AutoStartAdapter(mContext, noSystemAuto, mHandler);
-            listView.setAdapter(mAutoStartAdapter);
+            recyclerView.setAdapter(mAutoStartAdapter);
+            mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
+                @Override
+                public void onItemClick(View v, int pos) {
+                    DroidWallApi.alert(mContext, noSystemAuto.get(pos).getPackageReceiver());
+                }
+            });
             refreshClearButton();
         } else {
             mAutoStartAdapter = new AutoStartAdapter(mContext, isSystemAuto, null);
-            listView.setAdapter(mAutoStartAdapter);
+            recyclerView.setAdapter(mAutoStartAdapter);
+            mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
+                @Override
+                public void onItemClick(View v, int pos) {
+                    DroidWallApi.alert(mContext, isSystemAuto.get(pos).getPackageReceiver());
+                }
+            });
         }
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
     }
 
     @OnClick(R.id.btn_disable_all)
@@ -117,7 +134,8 @@ public class AutoStartFragment
             }
         }
 
-        ShellUtils.CommandResult mCommandResult = ShellUtils.execCommand(commandStrings, true, true);
+        ShellUtils.CommandResult mCommandResult = ShellUtils
+                .execCommand(commandStrings, true, true);
         if (mCommandResult.result == 0) {
             ShowToast.show("应用已禁止");
             for (AutoStartInfo auto : noSystemAuto) {

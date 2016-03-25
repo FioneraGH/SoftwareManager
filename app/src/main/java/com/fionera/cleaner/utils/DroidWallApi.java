@@ -36,7 +36,7 @@ public class DroidWallApi {
     public static DroidApp applications[] = null;
     private static boolean hasRoot = false;
 
-    private static void alert(Context ctx, CharSequence msg) {
+    public static void alert(Context ctx, CharSequence msg) {
         if (ctx != null) {
             new AlertDialog.Builder(ctx).setNeutralButton(android.R.string.ok, null).setMessage(msg)
                     .show();
@@ -268,27 +268,19 @@ public class DroidWallApi {
         }
     }
 
-    /**
-     * @param ctx application context (mandatory)
-     * @return a list of applications
-     */
     public static DroidApp[] getApps(Context ctx) {
         if (applications != null) {
-            // return cached instance
             return applications;
         }
         final SharedPreferences prefs = ctx.getSharedPreferences(PREFS_CACHE, 0);
-        // allowed application names separated by pipe '|' (persisted)
         final String savedUids_wifi = prefs.getString(PREF_WIFI_UIDS, "");
         final String savedUids_3g = prefs.getString(PREF_3G_UIDS, "");
         int selected_wifi[] = new int[0];
         int selected_3g[] = new int[0];
         if (savedUids_wifi.length() > 0) {
-            // Check which applications are allowed
-            final StringTokenizer tok = new StringTokenizer(savedUids_wifi, "|");
-            selected_wifi = new int[tok.countTokens()];
+            selected_wifi = new int[savedUids_wifi.split("|").length];
             for (int i = 0; i < selected_wifi.length; i++) {
-                final String uid = tok.nextToken();
+                String uid = savedUids_wifi.split("|")[i];
                 if (!uid.equals("")) {
                     try {
                         selected_wifi[i] = Integer.parseInt(uid);
@@ -297,15 +289,12 @@ public class DroidWallApi {
                     }
                 }
             }
-            // Sort the array to allow using "Arrays.binarySearch" later
             Arrays.sort(selected_wifi);
         }
         if (savedUids_3g.length() > 0) {
-            // Check which applications are allowed
-            final StringTokenizer tok = new StringTokenizer(savedUids_3g, "|");
-            selected_3g = new int[tok.countTokens()];
+            selected_3g = new int[savedUids_3g.split("|").length];
             for (int i = 0; i < selected_3g.length; i++) {
-                final String uid = tok.nextToken();
+                String uid = savedUids_3g.split("|")[i];
                 if (!uid.equals("")) {
                     try {
                         selected_3g[i] = Integer.parseInt(uid);
@@ -314,40 +303,33 @@ public class DroidWallApi {
                     }
                 }
             }
-            // Sort the array to allow using "Arrays.binarySearch" later
             Arrays.sort(selected_3g);
         }
         try {
             final PackageManager pkgmanager = ctx.getPackageManager();
             final List<ApplicationInfo> installed = pkgmanager.getInstalledApplications(0);
-            final HashMap<Integer, DroidApp> map = new HashMap<Integer, DroidApp>();
+            final HashMap<Integer, DroidApp> map = new HashMap<>();
             final Editor edit = prefs.edit();
             boolean changed = false;
-            String name = null;
-            String cachekey = null;
-            DroidApp app = null;
-            for (final ApplicationInfo apinfo : installed) {
-                app = map.get(apinfo.uid);
-                // filter applications which are not allowed to access the Internet
+            String name;
+            String cacheKey;
+            DroidApp app;
+            for (final ApplicationInfo appInfo : installed) {
+                app = map.get(appInfo.uid);
                 if (app == null && PackageManager.PERMISSION_GRANTED != pkgmanager
-                        .checkPermission(Manifest.permission.INTERNET, apinfo.packageName)) {
+                        .checkPermission(Manifest.permission.INTERNET, appInfo.packageName)) {
                     continue;
                 }
-                // try to get the application label from our cache - getApplicationLabel() is
-                // horribly slow!!!!
-                cachekey = "cache.label." + apinfo.packageName;
-                name = prefs.getString(cachekey, "");
+                cacheKey = "cache.label." + appInfo.packageName;
+                name = prefs.getString(cacheKey, "");
                 if (name.length() == 0) {
-                    // get label and put on cache
-                    name = pkgmanager.getApplicationLabel(apinfo).toString();
-                    edit.putString(cachekey, name);
+                    name = pkgmanager.getApplicationLabel(appInfo).toString();
+                    edit.putString(cacheKey, name);
                     changed = true;
                 }
                 if (app == null) {
-                    app = new DroidApp();
-                    app.uid = apinfo.uid;
-                    app.names = new String[]{name};
-                    map.put(apinfo.uid, app);
+                    app = new DroidApp(appInfo.uid, name, false, false);
+                    map.put(appInfo.uid, app);
                 } else {
                     final String newnames[] = new String[app.names.length + 1];
                     System.arraycopy(app.names, 0, newnames, 0, app.names.length);
@@ -365,7 +347,6 @@ public class DroidWallApi {
             if (changed) {
                 edit.apply();
             }
-            /* add special applications to the list */
             final DroidApp special[] = {new DroidApp(SPECIAL_UID_ANY,
                                                      "(Any application) - Same as selecting all "
                                                              + "applications",
@@ -378,7 +359,6 @@ public class DroidWallApi {
             for (DroidApp aSpecial : special) {
                 app = aSpecial;
                 if (app.uid != -1 && !map.containsKey(app.uid)) {
-                    // check if this application is allowed
                     if (Arrays.binarySearch(selected_wifi, app.uid) >= 0) {
                         app.selected_wifi = true;
                     }

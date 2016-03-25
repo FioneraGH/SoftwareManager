@@ -1,4 +1,5 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,13 +12,10 @@
 
         <TextView
             android:id="@+id/tv_top_tips"
-            android:text="非系统应用建议禁止"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="非系统应用建议禁止"/>
 
         <ListView
             android:id="@+id/listview"
@@ -42,7 +40,7 @@
         <ProgressBar
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:indeterminate="true" />
+            android:indeterminate="true"/>
 
         <TextView
             android:id="@+id/tv_progress_text"
@@ -51,7 +49,7 @@
             android:paddingTop="4dp"
             android:singleLine="true"
             android:text="@string/scanning"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"/>
 
     </LinearLayout>
 </FrameLayout>

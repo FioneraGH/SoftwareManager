@@ -14,79 +14,58 @@ import com.fionera.cleaner.R;
 import com.fionera.cleaner.bean.AppInfo;
 import com.fionera.cleaner.utils.StorageUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SoftwareAdapter extends BaseAdapter {
+public class SoftwareAdapter
+        extends BaseAdapter {
 
-    public List<AppInfo> mlistAppInfo;
-    LayoutInflater infater = null;
+    public List<AppInfo> mListAppInfo;
+    private LayoutInflater inflater = null;
     private Context mContext;
-    public static List<Integer> clearIds;
 
 
     public SoftwareAdapter(Context context, List<AppInfo> apps) {
-        infater = LayoutInflater.from(context);
-        mContext = context;
-        clearIds = new ArrayList<Integer>();
-        this.mlistAppInfo = apps;
+        this.inflater = LayoutInflater.from(context);
+        this.mContext = context;
+        this.mListAppInfo = apps;
     }
 
     @Override
     public int getCount() {
-        // TODO Auto-generated method stub
-        return mlistAppInfo.size();
+        return mListAppInfo.size();
     }
 
     @Override
     public Object getItem(int position) {
-        // TODO Auto-generated method stub
-        return mlistAppInfo.get(position);
+        return mListAppInfo.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        // TODO Auto-generated method stub
         return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         if (convertView == null) {
-            convertView = infater.inflate(R.layout.listview_software,
-                    null);
+            convertView = inflater.inflate(R.layout.rv_software_manage_item, parent, false);
             holder = new ViewHolder();
-            holder.appIcon = (ImageView) convertView
-                    .findViewById(R.id.app_icon);
-            holder.appName = (TextView) convertView
-                    .findViewById(R.id.app_name);
-            holder.size = (TextView) convertView
-                    .findViewById(R.id.app_size);
-
-            holder.ripleUninstall = (TextView) convertView
-                    .findViewById(R.id.riple_uninstall);
+            holder.appIcon = (ImageView) convertView.findViewById(R.id.app_icon);
+            holder.appName = (TextView) convertView.findViewById(R.id.app_name);
+            holder.size = (TextView) convertView.findViewById(R.id.app_size);
+            holder.uninstall = (TextView) convertView.findViewById(R.id.app_uninstall);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
         final AppInfo item = (AppInfo) getItem(position);
-        if (item != null) {
-
-            holder.appIcon.setImageDrawable(item.getAppIcon());
-            holder.appName.setText(item.getAppName());
-
-            if (item.isInRom()) {
-                holder.size.setText( StorageUtil.convertStorage(item.getPkgSize()));
-            } else {
-                holder.size.setText(StorageUtil.convertStorage(item.getPkgSize()));
-            }
-            //holder.size.setText(StorageUtil.convertStorage(item.getUid()));
-        }
-        holder.ripleUninstall.setOnClickListener(new View.OnClickListener() {
+        holder.appIcon.setImageDrawable(item.getAppIcon());
+        holder.appName.setText(item.getAppName());
+        holder.size.setText(StorageUtil.convertStorage(item.getPkgSize()));
+        holder.uninstall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent();
                 intent.setAction("android.intent.action.VIEW");
                 intent.setAction("android.intent.action.DELETE");
@@ -95,17 +74,13 @@ public class SoftwareAdapter extends BaseAdapter {
                 mContext.startActivity(intent);
             }
         });
-
-
         return convertView;
     }
-
 
     class ViewHolder {
         ImageView appIcon;
         TextView appName;
         TextView size;
-        TextView ripleUninstall;
-        String packageName;
+        TextView uninstall;
     }
 }

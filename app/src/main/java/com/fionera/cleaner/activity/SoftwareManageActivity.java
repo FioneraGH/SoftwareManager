@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -15,8 +16,8 @@ import com.fionera.cleaner.fragment.WeakFragmentPagerAdapter;
 
 import butterknife.Bind;
 
-
-public class SoftwareManageActivity extends BaseSwipeBackActivity {
+public class SoftwareManageActivity
+        extends BaseSwipeBackActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -32,7 +33,7 @@ public class SoftwareManageActivity extends BaseSwipeBackActivity {
 
         setSupportActionBar(toolbar);
 
-        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
         }
@@ -51,7 +52,8 @@ public class SoftwareManageActivity extends BaseSwipeBackActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class MyPagerAdapter extends WeakFragmentPagerAdapter {
+    public class MyPagerAdapter
+            extends WeakFragmentPagerAdapter {
 
         private final String[] TITLES = {"用户软件", "预装软件"};
 

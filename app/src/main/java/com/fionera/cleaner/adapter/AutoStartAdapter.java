@@ -2,6 +2,7 @@ package com.fionera.cleaner.adapter;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +13,28 @@ import android.widget.TextView;
 
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.bean.AutoStartInfo;
+import com.fionera.cleaner.utils.RvItemTouchListener;
 import com.fionera.cleaner.utils.ShellUtils;
 import com.fionera.cleaner.utils.ShowToast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class AutoStartAdapter
-        extends BaseAdapter {
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<AutoStartInfo> mListAppInfo;
     private LayoutInflater inflater = null;
     private Handler mHandler;
+
+    private RvItemTouchListener rvItemTouchListener;
+
+    public void setRvItemTouchListener(RvItemTouchListener rvItemTouchListener) {
+        this.rvItemTouchListener = rvItemTouchListener;
+    }
 
     public AutoStartAdapter(Context context, List<AutoStartInfo> apps, Handler mHandler) {
         this.inflater = LayoutInflater.from(context);
@@ -32,56 +43,47 @@ public class AutoStartAdapter
     }
 
     @Override
-    public int getCount() {
-        return mListAppInfo.size();
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(inflater.inflate(R.layout.rv_auto_start_item, parent, false));
     }
 
     @Override
-    public Object getItem(int position) {
-        return mListAppInfo.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.listview_auto_start, parent, false);
-            holder = new ViewHolder();
-            holder.appIcon = (ImageView) convertView.findViewById(R.id.app_icon);
-            holder.appName = (TextView) convertView.findViewById(R.id.app_name);
-            holder.size = (TextView) convertView.findViewById(R.id.app_size);
-            holder.switchCompat = (SwitchCompat) convertView.findViewById(R.id.sw_disable);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
-        final AutoStartInfo item = (AutoStartInfo) getItem(position);
-        holder.appIcon.setImageDrawable(item.getIcon());
-        holder.appName.setText(item.getLabel());
-        holder.switchCompat.setChecked(item.isEnable());
-        holder.switchCompat.setOnClickListener(new View.OnClickListener() {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        final ViewHolder theHolder = (ViewHolder) holder;
+        theHolder.appIcon
+                .setImageDrawable(mListAppInfo.get(theHolder.getAdapterPosition()).getIcon());
+        theHolder.appName.setText(mListAppInfo.get(theHolder.getAdapterPosition()).getLabel());
+        theHolder.switchCompat
+                .setChecked(mListAppInfo.get(theHolder.getAdapterPosition()).isEnable());
+        theHolder.switchCompat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (ShellUtils.checkRootPermission()) {
-                    if (item.isEnable()) {
-                        disableApp(item);
+                    if (mListAppInfo.get(theHolder.getAdapterPosition()).isEnable()) {
+                        disableApp(mListAppInfo.get(theHolder.getAdapterPosition()));
                     } else {
 
-                        enableApp(item);
+                        enableApp(mListAppInfo.get(theHolder.getAdapterPosition()));
                     }
                 } else {
                     ShowToast.show("该功能需要获取系统root权限");
                 }
             }
         });
-        holder.packageName = item.getPackageName();
+        theHolder.packageName = mListAppInfo.get(theHolder.getAdapterPosition()).getPackageName();
+        theHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rvItemTouchListener != null) {
+                    rvItemTouchListener.onItemClick(v, theHolder.getAdapterPosition());
+                }
+            }
+        });
+    }
 
-        return convertView;
+    @Override
+    public int getItemCount() {
+        return mListAppInfo.size();
     }
 
     private void disableApp(AutoStartInfo item) {
@@ -95,7 +97,8 @@ public class AutoStartAdapter
             cmd = cmd.replace("$", "\"" + "$" + "\"");
             commandStrings.add(cmd);
         }
-        ShellUtils.CommandResult mCommandResult = ShellUtils.execCommand(commandStrings, true, true);
+        ShellUtils.CommandResult mCommandResult = ShellUtils
+                .execCommand(commandStrings, true, true);
 
         if (mCommandResult.result == 0) {
             ShowToast.show(item.getLabel() + "已禁止");
@@ -135,11 +138,22 @@ public class AutoStartAdapter
         }
     }
 
-    class ViewHolder {
+    class ViewHolder
+            extends RecyclerView.ViewHolder {
+        @Bind(R.id.app_icon)
         ImageView appIcon;
+        @Bind(R.id.app_name)
         TextView appName;
+        @Bind(R.id.app_size)
         TextView size;
+        @Bind(R.id.sw_disable)
         SwitchCompat switchCompat;
+
         String packageName;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
     }
 }

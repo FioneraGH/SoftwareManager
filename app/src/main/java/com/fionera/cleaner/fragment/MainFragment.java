@@ -41,22 +41,22 @@ public class MainFragment
     private ValueAnimator valueAnimator1;
     private ValueAnimator valueAnimator2;
 
-    @OnClick(R.id.card1)
+    @OnClick(R.id.tv_main_clean)
     void speedUp() {
         startActivity(new Intent(mContext, MemoryCleanActivity.class));
     }
 
-    @OnClick(R.id.card2)
+    @OnClick(R.id.tv_main_rubbish)
     void rubbishClean() {
         startActivity(new Intent(mContext, RubbishCleanActivity.class));
     }
 
-    @OnClick(R.id.card3)
+    @OnClick(R.id.tv_main_auto)
     void AutoStartManage() {
         startActivity(new Intent(mContext, AutoStartManageActivity.class));
     }
 
-    @OnClick(R.id.card4)
+    @OnClick(R.id.tv_main_soft)
     void SoftwareManage() {
         startActivity(new Intent(mContext, SoftwareManageActivity.class));
     }

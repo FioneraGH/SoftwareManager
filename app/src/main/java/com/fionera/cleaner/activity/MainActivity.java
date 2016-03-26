@@ -2,6 +2,7 @@ package com.fionera.cleaner.activity;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -36,6 +37,7 @@ public class MainActivity
         setContentView(R.layout.activity_main);
 
         setSupportActionBar(toolbar);
+        ViewCompat.setElevation(toolbar, 8);
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                                                                         toolbar, 0, 0);
@@ -62,7 +64,7 @@ public class MainActivity
 
         switch (position) {
             case 0:
-                if(ab != null) {
+                if (ab != null) {
                     ab.setTitle("软件管理");
                 }
                 if (mMainFragment == null) {
@@ -75,7 +77,7 @@ public class MainActivity
                 mDrawerLayout.closeDrawers();
                 break;
             case 1:
-                if(ab != null) {
+                if (ab != null) {
                     ab.setTitle("网络控制");
                 }
                 if (mNetworkFragment == null) {
@@ -88,7 +90,7 @@ public class MainActivity
                 mDrawerLayout.closeDrawers();
                 break;
             case 2:
-                if(ab != null) {
+                if (ab != null) {
                     ab.setTitle("设置");
                 }
                 if (mSettingsFragment == null) {

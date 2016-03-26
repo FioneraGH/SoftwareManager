@@ -5,11 +5,12 @@ import android.content.pm.IPackageStatsObserver;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageStats;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import com.fionera.cleaner.R;
 import com.fionera.cleaner.adapter.SoftwareAdapter;
 import com.fionera.cleaner.base.BaseFragment;
 import com.fionera.cleaner.bean.AppInfo;
+import com.fionera.cleaner.utils.DroidWallApi;
+import com.fionera.cleaner.utils.RvItemTouchListener;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
 
@@ -42,7 +45,7 @@ public class SoftwareManageFragment
     @Bind(R.id.tv_top_tips)
     TextView topText;
     @Bind(R.id.listview)
-    ListView listview;
+    RecyclerView recyclerView;
     List<AppInfo> userAppInfos = null;
     List<AppInfo> systemAppInfos = null;
     @Bind(R.id.ll_loading_progress)
@@ -144,8 +147,9 @@ public class SoftwareManageFragment
             @Override
             protected void onProgressUpdate(Integer... values) {
                 try {
-                    mProgressBarText.setText(getString(R.string.scanning_m_of_n, values[0], values[1]));
-                }catch (Exception e){
+                    mProgressBarText
+                            .setText(getString(R.string.scanning_m_of_n, values[0], values[1]));
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -169,18 +173,24 @@ public class SoftwareManageFragment
                     topText.setText(getString(R.string.software_top_text, userAppInfos.size(),
                                               StorageUtil.convertStorage(allSize)));
                     mAutoStartAdapter = new SoftwareAdapter(mContext, userAppInfos);
-                    listview.setAdapter(mAutoStartAdapter);
+                    recyclerView.setAdapter(mAutoStartAdapter);
+                    mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
+                        @Override
+                        public void onItemClick(View v, int pos) {
+                            DroidWallApi.alert(mContext, userAppInfos.get(pos).getPackname());
+                        }
+                    });
                 } else {
                     mAutoStartAdapter = new SoftwareAdapter(mContext, systemAppInfos);
-                    listview.setAdapter(mAutoStartAdapter);
+                    recyclerView.setAdapter(mAutoStartAdapter);
+                    mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
+                        @Override
+                        public void onItemClick(View v, int pos) {
+                            DroidWallApi.alert(mContext, systemAppInfos.get(pos).getPackname());
+                        }
+                    });
                 }
-                listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position,
-                                            long id) {
-                        ShowToast.show(position + "");
-                    }
-                });
+                recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
             }
         }.execute();
     }

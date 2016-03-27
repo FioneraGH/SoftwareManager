@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 
+import com.fionera.cleaner.R;
 import com.fionera.cleaner.dialogs.ProgressDialogFragment;
 
 import butterknife.ButterKnife;
@@ -44,6 +45,7 @@ public abstract class BaseActivity
             intent.putExtras(bundle);
         }
         startActivity(intent);
+        overridePendingTransition(R.anim.anim_trans_right_in, R.anim.anim_activity_exit);
     }
 
     public void showDialogLoading() {

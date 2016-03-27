@@ -7,22 +7,7 @@
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme">
-        <item name="android:windowAnimationStyle">@style/WindowAnim</item>
         <item name="android:windowIsTranslucent">true</item>
-    </style>
-
-    <style name="FadeExitAppTheme" parent="AppBaseTheme">
-        <item name="android:windowAnimationStyle">@style/FadeExitWindowAnim</item>
-        <item name="android:windowIsTranslucent">true</item>
-    </style>
-
-    <style name="WindowAnim" parent="@android:style/Animation.Translucent">
-        <item name="android:windowEnterAnimation">@anim/anim_trans_right_in</item>
-        <item name="android:windowExitAnimation">@anim/anim_trans_right_out</item>
-    </style>
-
-    <style name="FadeExitWindowAnim" parent="@android:style/Animation.Translucent">
-        <item name="android:windowExitAnimation">@anim/anim_activity_exit</item>
     </style>
 
     <style name="DialogAppTheme" parent="AppTheme">

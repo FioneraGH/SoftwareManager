@@ -44,7 +44,7 @@ public class SoftwareManageFragment
 
     @Bind(R.id.tv_top_tips)
     TextView topText;
-    @Bind(R.id.listview)
+    @Bind(R.id.rv_software_manage)
     RecyclerView recyclerView;
     List<AppInfo> userAppInfos = null;
     List<AppInfo> systemAppInfos = null;

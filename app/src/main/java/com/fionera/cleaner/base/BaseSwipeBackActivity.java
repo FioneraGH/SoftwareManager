@@ -10,15 +10,16 @@ import com.fionera.cleaner.R;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.widget.SwipeBackLayout;
 
-public abstract class BaseSwipeBackActivity extends BaseActivity{
+public abstract class BaseSwipeBackActivity
+        extends BaseActivity {
     private SwipeBackLayout mSwipeBackLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        mSwipeBackLayout = (SwipeBackLayout) LayoutInflater.from(this).inflate(
-                R.layout.ui_swipeback_layout, null);
+        mSwipeBackLayout = (SwipeBackLayout) LayoutInflater.from(this)
+                .inflate(R.layout.ui_swipeback_layout, null);
     }
 
     @Override
@@ -28,9 +29,15 @@ public abstract class BaseSwipeBackActivity extends BaseActivity{
     }
 
     @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.anim_activity_exit, R.anim.anim_trans_right_out);
+    }
+
+    @Override
     public View findViewById(int id) {
         View v = super.findViewById(id);
-        if (v == null){
+        if (v == null) {
             return mSwipeBackLayout.findViewById(id);
         }
         return v;

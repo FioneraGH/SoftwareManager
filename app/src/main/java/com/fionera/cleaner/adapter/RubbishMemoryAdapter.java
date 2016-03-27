@@ -3,89 +3,89 @@ package com.fionera.cleaner.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.fionera.cleaner.bean.CacheInfo;
 import com.fionera.cleaner.R;
+import com.fionera.cleaner.utils.RvItemTouchListener;
+import com.fionera.cleaner.utils.ShellUtils;
+import com.fionera.cleaner.utils.ShowToast;
 
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class RubbishMemoryAdapter
-        extends BaseAdapter
-        implements AdapterView.OnItemClickListener {
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<CacheInfo> mListAppInfo;
-    private LayoutInflater infater = null;
+    private LayoutInflater inflater = null;
     private Context mContext;
 
+    private RvItemTouchListener rvItemTouchListener;
+
+    public void setRvItemTouchListener(RvItemTouchListener rvItemTouchListener) {
+        this.rvItemTouchListener = rvItemTouchListener;
+    }
+
     public RubbishMemoryAdapter(Context context, List<CacheInfo> apps) {
-        this.infater = LayoutInflater.from(context);
-        this.mContext = context;
+        this.inflater = LayoutInflater.from(context);
         this.mListAppInfo = apps;
+        this.mContext = context;
     }
 
     @Override
-    public int getCount() {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(inflater.inflate(R.layout.rv_rubbish_clean_item, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        final ViewHolder theHolder = (ViewHolder) holder;
+        theHolder.appIcon.setImageDrawable(
+                mListAppInfo.get(theHolder.getAdapterPosition()).getApplicationIcon());
+        theHolder.appName
+                .setText(mListAppInfo.get(theHolder.getAdapterPosition()).getApplicationName());
+        theHolder.size.setText(Formatter.formatShortFileSize(mContext, mListAppInfo
+                .get(theHolder.getAdapterPosition()).getCacheSize()));
+        theHolder.packageName = mListAppInfo.get(theHolder.getAdapterPosition()).getPackageName();
+        theHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rvItemTouchListener != null) {
+                    rvItemTouchListener.onItemClick(v, theHolder.getAdapterPosition());
+                }
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
         return mListAppInfo.size();
     }
 
-    @Override
-    public Object getItem(int position) {
-        return mListAppInfo.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = infater.inflate(R.layout.listview_rublish_clean, parent, false);
-            holder = new ViewHolder();
-            holder.appIcon = (ImageView) convertView.findViewById(R.id.app_icon);
-            holder.appName = (TextView) convertView.findViewById(R.id.app_name);
-            holder.size = (TextView) convertView.findViewById(R.id.app_size);
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
-        final CacheInfo item = (CacheInfo) getItem(position);
-        holder.appIcon.setImageDrawable(item.getApplicationIcon());
-        holder.appName.setText(item.getApplicationName());
-        holder.size.setText(Formatter.formatShortFileSize(mContext, item.getCacheSize()));
-        holder.packageName = item.getPackageName();
-
-        return convertView;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-        if (viewHolder != null && viewHolder.packageName != null) {
-            Intent intent = new Intent();
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-            intent.setData(Uri.parse("package:" + viewHolder.packageName));
-
-            mContext.startActivity(intent);
-        }
-    }
-
-    class ViewHolder {
+    class ViewHolder
+            extends RecyclerView.ViewHolder {
+        @Bind(R.id.app_icon)
         ImageView appIcon;
+        @Bind(R.id.app_name)
         TextView appName;
+        @Bind(R.id.app_size)
         TextView size;
         String packageName;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
     }
 }

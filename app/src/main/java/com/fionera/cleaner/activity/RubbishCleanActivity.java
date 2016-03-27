@@ -4,9 +4,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.Formatter;
 import android.view.MenuItem;
@@ -14,7 +17,6 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -24,6 +26,7 @@ import com.fionera.cleaner.base.BaseSwipeBackActivity;
 import com.fionera.cleaner.bean.CacheInfo;
 import com.fionera.cleaner.bean.StorageSizeInfo;
 import com.fionera.cleaner.service.CleanerService;
+import com.fionera.cleaner.utils.RvItemTouchListener;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
 
@@ -41,8 +44,8 @@ public class RubbishCleanActivity
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
-    @Bind(R.id.listview)
-    ListView mListView;
+    @Bind(R.id.rv_rubbish_clean)
+    RecyclerView recyclerView;
     List<CacheInfo> mCacheInfo = new ArrayList<>();
     RubbishMemoryAdapter rubbishMemoryAdapter;
 
@@ -86,7 +89,7 @@ public class RubbishCleanActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_rublish_clean);
+        setContentView(R.layout.activity_rubbish_clean);
 
         setSupportActionBar(toolbar);
 
@@ -96,8 +99,18 @@ public class RubbishCleanActivity
         }
 
         rubbishMemoryAdapter = new RubbishMemoryAdapter(mContext, mCacheInfo);
-        mListView.setAdapter(rubbishMemoryAdapter);
-        mListView.setOnItemClickListener(rubbishMemoryAdapter);
+        recyclerView.setAdapter(rubbishMemoryAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        rubbishMemoryAdapter.setRvItemTouchListener(new RvItemTouchListener() {
+            @Override
+            public void onItemClick(View v, int pos) {
+                Intent intent = new Intent();
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + mCacheInfo.get(pos).getPackageName()));
+                mContext.startActivity(intent);
+            }
+        });
         bindService(new Intent(mContext, CleanerService.class), mServiceConnection,
                     Context.BIND_AUTO_CREATE);
     }

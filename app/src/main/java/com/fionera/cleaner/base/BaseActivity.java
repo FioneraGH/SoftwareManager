@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 
 import com.fionera.cleaner.R;
-import com.fionera.cleaner.dialogs.ProgressDialogFragment;
+import com.fionera.cleaner.widget.ProgressDialogFragment;
 
 import butterknife.ButterKnife;
 

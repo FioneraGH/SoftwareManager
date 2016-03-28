@@ -18,9 +18,11 @@ public class NavigationDrawerFragment
         extends Fragment
         implements View.OnClickListener {
 
-    private NavigationDrawerCallbacks mCallbacks;
     private final int radioIds[] = {R.id.rb_home_tag, R.id.rb_network_tag, R.id.rb_setting_tag};
     private RadioButton radios[] = new RadioButton[radioIds.length];
+    private Context context;
+
+    private NavigationDrawerCallbacks mCallbacks;
 
     public interface NavigationDrawerCallbacks {
         void onNavigationDrawerItemSelected(int position);
@@ -42,10 +44,11 @@ public class NavigationDrawerFragment
     }
 
     @Override
-    public void onAttach(Context activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            mCallbacks = (NavigationDrawerCallbacks) activity;
+            mCallbacks = (NavigationDrawerCallbacks) context;
+            this.context = context;
         } catch (ClassCastException e) {
             throw new ClassCastException("必须实现接口");
         }
@@ -68,7 +71,11 @@ public class NavigationDrawerFragment
     public void onClick(View v) {
         for (int i = 0; i < radios.length; ++i) {
             if (v.equals(radios[i])) {
-                mCallbacks.onNavigationDrawerItemSelected(i);
+                if(mCallbacks != null) {
+                    mCallbacks.onNavigationDrawerItemSelected(i);
+                }else{
+                    mCallbacks = (NavigationDrawerCallbacks) context;
+                }
             } else {
                 radios[i].setChecked(false);
             }

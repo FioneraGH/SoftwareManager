@@ -27,6 +27,7 @@ import com.fionera.cleaner.utils.DroidWallApi;
 import com.fionera.cleaner.utils.RvItemTouchListener;
 import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
+import com.fionera.cleaner.widget.BottomSheetDialogView;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -177,7 +178,8 @@ public class SoftwareManageFragment
                     mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
                         @Override
                         public void onItemClick(View v, int pos) {
-                            DroidWallApi.alert(mContext, userAppInfos.get(pos).getPackname());
+                            BottomSheetDialogView
+                                    .show(mContext, "包名：" + userAppInfos.get(pos).getPackname());
                         }
                     });
                 } else {
@@ -186,7 +188,8 @@ public class SoftwareManageFragment
                     mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
                         @Override
                         public void onItemClick(View v, int pos) {
-                            DroidWallApi.alert(mContext, systemAppInfos.get(pos).getPackname());
+                            BottomSheetDialogView
+                                    .show(mContext, "包名：" + systemAppInfos.get(pos).getPackname());
                         }
                     });
                 }

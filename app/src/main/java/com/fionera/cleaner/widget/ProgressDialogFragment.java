@@ -1,10 +1,10 @@
-package com.fionera.cleaner.dialogs;
+package com.fionera.cleaner.widget;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 
 public class ProgressDialogFragment
@@ -34,10 +34,11 @@ public class ProgressDialogFragment
         mMessage = getArguments().getString("message");
 
         ProgressDialog mProgressDialog = new ProgressDialog(getActivity(),
-                                                            AlertDialog.THEME_HOLO_LIGHT);
+                                                            android.R.style
+                                                                    .Theme_Material_Light_Dialog_Alert);
         if (mIndeterminateDrawable > 0) {
             mProgressDialog.setIndeterminateDrawable(
-                    getActivity().getResources().getDrawable(mIndeterminateDrawable));
+                    ContextCompat.getDrawable(getContext(), mIndeterminateDrawable));
         }
 
         if (mMessage != null) {

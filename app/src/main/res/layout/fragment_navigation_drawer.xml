@@ -5,18 +5,11 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/userInfo"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="150dp">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@color/blue"/>
-
-    </RelativeLayout>
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/iv_nav_header"/>
 
     <LinearLayout
         android:layout_width="match_parent"

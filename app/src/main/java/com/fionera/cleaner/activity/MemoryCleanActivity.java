@@ -7,6 +7,8 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,17 +42,17 @@ public class MemoryCleanActivity
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
+    @Bind(R.id.rv_memory_clean)
+    RecyclerView recyclerView;
+    List<AppProcessInfo> mAppProcessInfos = new ArrayList<>();
+    ClearMemoryAdapter mClearMemoryAdapter;
+
     @Bind(R.id.rl_header)
     RelativeLayout header;
     @Bind(R.id.tc_counter)
     TextView textCounter;
     @Bind(R.id.tv_postfix)
     TextView tvPostFix;
-
-    @Bind(R.id.listview)
-    ListView mListView;
-    List<AppProcessInfo> mAppProcessInfos = new ArrayList<>();
-    ClearMemoryAdapter mClearMemoryAdapter;
 
     @Bind(R.id.btn_clear)
     Button btnClear;
@@ -92,7 +94,8 @@ public class MemoryCleanActivity
         }
 
         mClearMemoryAdapter = new ClearMemoryAdapter(mContext, mAppProcessInfos);
-        mListView.setAdapter(mClearMemoryAdapter);
+        recyclerView.setAdapter(mClearMemoryAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
         bindService(new Intent(mContext, CoreService.class), mServiceConnection,
                     Context.BIND_AUTO_CREATE);

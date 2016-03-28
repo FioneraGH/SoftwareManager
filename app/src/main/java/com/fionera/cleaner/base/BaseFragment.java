@@ -3,7 +3,7 @@ package com.fionera.cleaner.base;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 
-import com.fionera.cleaner.dialogs.ProgressDialogFragment;
+import com.fionera.cleaner.widget.ProgressDialogFragment;
 
 public class BaseFragment
         extends Fragment {

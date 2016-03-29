@@ -25,7 +25,7 @@
     <color name="white1">#f8f8f8</color>
 
     <item name="drawer_bg_color_normal" type="color">#00ffffff</item>
-    <item name="drawer_bg_color_press" type="color">#ffeeeeee</item>
+    <item name="drawer_bg_color_selected" type="color">#ffeeeeee</item>
 
 
     <color name="background_tab_pressed">#ffffff</color>

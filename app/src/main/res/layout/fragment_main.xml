@@ -61,11 +61,12 @@
         </RelativeLayout>
 
         <TextView
+            android:id="@+id/tv_home_traffic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="24dp"
+            android:padding="16dp"
             android:text="流量已使用 1076MB"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_large"/>

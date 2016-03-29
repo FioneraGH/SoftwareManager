@@ -26,17 +26,20 @@ import java.util.StringTokenizer;
 public class DroidWallApi {
 
     public static final int SPECIAL_UID_ANY = -10;
-    private static final String SCRIPT_FILE = "droid_wall.sh";
+    public static final String SCRIPT_FILE = "droid_wall.sh";
 
     public static final String PREFS_CACHE = "DroidWallAppCachePrefs";
     public static final String PREFS_CONFIG = "DroidWallConfigPrefs";
     public static final String PREF_3G_UIDS = "AllowedUids3G";
     public static final String PREF_WIFI_UIDS = "AllowedUidsWifi";
 
+    public static final String ITFS_WIFI[] = {"wlan+", "tiwlan+", "eth+"};
+    public static final String ITFS_3G[] = {"rmnet+", "pdp+", "ppp+", "uwbr+"};
+
     public static DroidApp applications[] = null;
     private static boolean hasRoot = false;
 
-    public static void alert(Context ctx, CharSequence msg) {
+    private static void alert(Context ctx, CharSequence msg) {
         if (ctx != null) {
             new AlertDialog.Builder(ctx).setNeutralButton(android.R.string.ok, null).setMessage(msg)
                     .show();
@@ -152,8 +155,6 @@ public class DroidWallApi {
             return false;
         }
         assertBinaries(ctx, showErrors);
-        final String ITFS_WIFI[] = {"tiwlan+", "wlan+", "eth+"};
-        final String ITFS_3G[] = {"rmnet+", "pdp+", "ppp+", "uwbr+"};
 
         final StringBuilder script = new StringBuilder();
         try {

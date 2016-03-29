@@ -1,6 +1,5 @@
 package com.fionera.cleaner.widget;
 
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -17,10 +16,6 @@ import android.view.View;
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.utils.DisplayUtils;
 
-
-/**
- * Created by bruce on 11/6/14.
- */
 public class ArcProgress
         extends View {
     private Paint paint;

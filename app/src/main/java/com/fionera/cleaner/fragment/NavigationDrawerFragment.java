@@ -7,10 +7,9 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
+import android.widget.TextView;
 
 import com.fionera.cleaner.R;
-import com.fionera.cleaner.base.BaseFragment;
 
 import butterknife.ButterKnife;
 
@@ -18,8 +17,8 @@ public class NavigationDrawerFragment
         extends Fragment
         implements View.OnClickListener {
 
-    private final int radioIds[] = {R.id.rb_home_tag, R.id.rb_network_tag, R.id.rb_setting_tag};
-    private RadioButton radios[] = new RadioButton[radioIds.length];
+    private final int textViewIds[] = {R.id.tv_home_tag, R.id.tv_network_tag, R.id.tv_setting_tag};
+    private TextView textViews[] = new TextView[textViewIds.length];
     private Context context;
 
     private NavigationDrawerCallbacks mCallbacks;
@@ -35,11 +34,11 @@ public class NavigationDrawerFragment
         View view = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
         ButterKnife.bind(this, view);
 
-        for (int i = 0; i < radioIds.length; ++i) {
-            radios[i] = (RadioButton) view.findViewById(radioIds[i]);
-            radios[i].setOnClickListener(this);
+        for (int i = 0; i < textViewIds.length; ++i) {
+            textViews[i] = (TextView) view.findViewById(textViewIds[i]);
+            textViews[i].setOnClickListener(this);
         }
-        radios[0].setChecked(true);
+        textViews[0].setSelected(true);
         return view;
     }
 
@@ -69,15 +68,14 @@ public class NavigationDrawerFragment
 
     @Override
     public void onClick(View v) {
-        for (int i = 0; i < radios.length; ++i) {
-            if (v.equals(radios[i])) {
-                if(mCallbacks != null) {
+        for (int i = 0; i < textViews.length; ++i) {
+            if (v.equals(textViews[i])) {
+                if (mCallbacks != null) {
                     mCallbacks.onNavigationDrawerItemSelected(i);
-                }else{
-                    mCallbacks = (NavigationDrawerCallbacks) context;
                 }
+                textViews[i].setSelected(true);
             } else {
-                radios[i].setChecked(false);
+                textViews[i].setSelected(false);
             }
         }
     }

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.net.TrafficStats;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.fionera.cleaner.activity.AutoStartManageActivity;
 import com.fionera.cleaner.activity.MemoryCleanActivity;
 import com.fionera.cleaner.activity.RubbishCleanActivity;
 import com.fionera.cleaner.utils.AppUtil;
+import com.fionera.cleaner.utils.LogCat;
 import com.fionera.cleaner.utils.StorageUtil;
 import com.fionera.cleaner.widget.ArcProgress;
 import com.fionera.cleaner.R;
@@ -37,6 +39,9 @@ public class MainFragment
 
     @Bind(R.id.arc_home_process)
     ArcProgress arcProcess;
+
+    @Bind(R.id.tv_home_traffic)
+    TextView tvTraffic;
 
     private ValueAnimator valueAnimator1;
     private ValueAnimator valueAnimator2;
@@ -78,7 +83,7 @@ public class MainFragment
 
     private void fillData() {
         SDCardInfo mSDCardInfo = StorageUtil.getSDCardInfo();
-        SDCardInfo mSystemInfo = StorageUtil.getSystemSpaceInfo(mContext);
+        SDCardInfo mSystemInfo = StorageUtil.getSystemSpaceInfo();
         long availBlock;
         long TotalBlocks;
         if (mSDCardInfo != null) {
@@ -133,6 +138,9 @@ public class MainFragment
             }
         });
         valueAnimator2.start();
+
+        long traffic = TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes();
+        tvTraffic.setText("流量已使用 " + StorageUtil.convertStorage(traffic));
     }
 
     @Override

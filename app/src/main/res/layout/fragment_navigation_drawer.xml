@@ -1,5 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
@@ -16,44 +17,47 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/rb_home_tag"
+        <com.fionera.cleaner.widget.DrawableTextView
+            android:id="@+id/tv_home_tag"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@drawable/sl_drawer_bg"
-            android:button="@null"
+            android:background="@drawable/sl_bg_drawer_item"
             android:drawableLeft="@drawable/ic_drawer_home"
             android:drawablePadding="16dp"
             android:gravity="center_vertical"
             android:paddingLeft="24dp"
             android:text="首页"
-            android:textSize="17sp"/>
+            android:textSize="17sp"
+            app:left_height="24dp"
+            app:left_width="24dp"/>
 
-        <RadioButton
-            android:id="@+id/rb_network_tag"
+        <com.fionera.cleaner.widget.DrawableTextView
+            android:id="@+id/tv_network_tag"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@drawable/sl_drawer_bg"
-            android:button="@null"
+            android:background="@drawable/sl_bg_drawer_item"
             android:drawableLeft="@drawable/ic_drawer_network"
             android:drawablePadding="16dp"
             android:gravity="center_vertical"
             android:paddingLeft="24dp"
             android:text="网络控制"
-            android:textSize="17sp"/>
+            android:textSize="17sp"
+            app:left_height="24dp"
+            app:left_width="24dp"/>
 
-        <RadioButton
-            android:id="@+id/rb_setting_tag"
+        <com.fionera.cleaner.widget.DrawableTextView
+            android:id="@+id/tv_setting_tag"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@drawable/sl_drawer_bg"
-            android:button="@null"
+            android:background="@drawable/sl_bg_drawer_item"
             android:drawableLeft="@drawable/ic_drawer_settings"
             android:drawablePadding="16dp"
             android:gravity="center_vertical"
             android:paddingLeft="24dp"
             android:text="设置"
-            android:textSize="17sp"/>
+            android:textSize="17sp"
+            app:left_height="24dp"
+            app:left_width="24dp"/>
 
     </LinearLayout>
 </LinearLayout>

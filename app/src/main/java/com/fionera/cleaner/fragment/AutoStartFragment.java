@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -96,7 +97,8 @@ public class AutoStartFragment
             mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
                 @Override
                 public void onItemClick(View v, int pos) {
-                    DroidWallApi.alert(mContext, noSystemAuto.get(pos).getPackageReceiver());
+                    new AlertDialog.Builder(mContext).setTitle("自启接收器").setMessage(
+                            noSystemAuto.get(pos).getPackageReceiver().replace(";", ";\n\n")).show();
                 }
             });
             refreshClearButton();
@@ -106,7 +108,8 @@ public class AutoStartFragment
             mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
                 @Override
                 public void onItemClick(View v, int pos) {
-                    DroidWallApi.alert(mContext, isSystemAuto.get(pos).getPackageReceiver());
+                    new AlertDialog.Builder(mContext).setTitle("自启接收器").setMessage(
+                            isSystemAuto.get(pos).getPackageReceiver().replace(";", ";\n\n")).show();
                 }
             });
         }

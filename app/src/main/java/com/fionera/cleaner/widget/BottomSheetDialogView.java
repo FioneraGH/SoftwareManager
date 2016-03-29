@@ -13,6 +13,9 @@ import android.widget.TextView;
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.utils.ShowToast;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by fionera on 16-3-1.
  */
@@ -44,17 +47,34 @@ public class BottomSheetDialogView {
     }
 
     private static class SimpleAdapter
-            extends RecyclerView.Adapter<ViewHolder> {
+            extends RecyclerView.Adapter<InnerViewHolder> {
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public InnerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.rv_bottom_sheet_recycler_item, parent, false);
-            return new ViewHolder(view);
+            return new InnerViewHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final InnerViewHolder holder, int position) {
+            switch (position) {
+                case 0:
+                    holder.textView.setText("应用基本信息");
+                    break;
+                case 1:
+                    holder.textView.setText("应用权限信息");
+                    break;
+                case 2:
+                    holder.textView.setText("应用界面活动信息");
+                    break;
+                case 3:
+                    holder.textView.setText("应用接收器信息");
+                    break;
+                case 4:
+                    holder.textView.setText("应用服务信息");
+                    break;
+            }
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -65,15 +85,18 @@ public class BottomSheetDialogView {
 
         @Override
         public int getItemCount() {
-            return 4;
+            return 5;
         }
     }
 
-    private static class ViewHolder
+    static class InnerViewHolder
             extends RecyclerView.ViewHolder {
+        @Bind(R.id.tv_bottom_sheet_name)
+        TextView textView;
 
-        public ViewHolder(View itemView) {
+        public InnerViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

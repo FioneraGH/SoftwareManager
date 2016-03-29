@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager.LayoutParams;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
@@ -60,6 +61,13 @@ public class ShortCutActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_short_cut);
 
+        bindService(new Intent(mContext, CoreService.class), mServiceConnection,
+                    Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         objectAnimator = ObjectAnimator.ofFloat(cleanLightImg,"rotation",0,720);
         objectAnimator.setDuration(1500);
         objectAnimator.setInterpolator(new LinearInterpolator());
@@ -87,8 +95,6 @@ public class ShortCutActivity
             }
         });
         objectAnimator.start();
-        bindService(new Intent(mContext, CoreService.class), mServiceConnection,
-                    Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -126,26 +132,16 @@ public class ShortCutActivity
         }, 2000);
     }
 
-    private void killProcess() {
-        ActivityManager am = (ActivityManager) getBaseContext().getApplicationContext()
-                .getSystemService(Context.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> processes = am.getRunningAppProcesses();
-        for (ActivityManager.RunningAppProcessInfo info : processes) {
-            if (info != null && info.processName != null && info.processName.length() > 0) {
-                String pkgName = info.processName;
-                if (!("system".equals(pkgName) || "launcher"
-                        .equals(pkgName) || "android.process.media"
-                        .equals(pkgName) || "android.process.acore"
-                        .equals(pkgName) || "com.android.phone".equals(pkgName))) {
-                    am.killBackgroundProcesses(pkgName);
-                }
-            }
-        }
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         unbindService(mServiceConnection);
+        objectAnimator.cancel();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.anim_activity_exit, R.anim.anim_trans_right_out);
     }
 }

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v4.content.ContextCompat;
 
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.activity.AboutActivity;
@@ -19,11 +20,6 @@ public class SettingsFragment
         implements Preference.OnPreferenceClickListener {
 
     public static final String SHORTCUT_NAME = "一键加速";
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -39,7 +35,7 @@ public class SettingsFragment
     }
 
     private void checkInstallShortCut() {
-        findPreference("createShortCut").setTitle(hasShortcut()?"删除":"创建" + "\"一键加速\"快捷方式");
+        findPreference("createShortCut").setTitle((hasShortcut() ? "删除" : "创建") + "\"一键加速\"快捷方式");
     }
 
     @Override

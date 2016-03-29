@@ -5,6 +5,7 @@ import android.content.pm.IPackageStatsObserver;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageStats;
+import android.content.pm.ServiceInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -15,22 +16,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fionera.cleaner.R;
 import com.fionera.cleaner.adapter.SoftwareAdapter;
 import com.fionera.cleaner.base.BaseFragment;
 import com.fionera.cleaner.bean.AppInfo;
-import com.fionera.cleaner.utils.DroidWallApi;
+import com.fionera.cleaner.utils.LogCat;
 import com.fionera.cleaner.utils.RvItemTouchListener;
-import com.fionera.cleaner.utils.ShowToast;
 import com.fionera.cleaner.utils.StorageUtil;
 import com.fionera.cleaner.widget.BottomSheetDialogView;
 
 import java.lang.reflect.Method;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -100,23 +100,39 @@ public class SoftwareManageFragment
                 final List<AppInfo> appInfos = new ArrayList<>();
 
                 PackageManager pm = mContext.getPackageManager();
-                final List<PackageInfo> packInfos = pm.getInstalledPackages(0);
+                final List<PackageInfo> packInfos = pm.getInstalledPackages(
+                                PackageManager.GET_SERVICES | PackageManager.GET_PERMISSIONS);
                 final CountDownLatch countDownLatch = new CountDownLatch(packInfos.size());
                 publishProgress(0, packInfos.size());
                 try {
                     for (PackageInfo packInfo : packInfos) {
                         final AppInfo appInfo = new AppInfo();
                         appInfo.setAppIcon(packInfo.applicationInfo.loadIcon(pm));
-                        appInfo.setUid(packInfo.applicationInfo.uid);
                         appInfo.setAppName(packInfo.applicationInfo.loadLabel(pm).toString());
-                        appInfo.setPackname(packInfo.packageName);
+                        appInfo.setPackageName(packInfo.packageName);
+                        appInfo.setVersion(packInfo.versionName);
+                        List<String> services = new ArrayList<>();
+
+                        if(packInfo.services != null) {
+                            for (ServiceInfo serviceInfo : packInfo.services) {
+                                services.add(serviceInfo.name);
+                            }
+                        }else{
+                            services.add("未检测到服务");
+                        }
+                        appInfo.setServiceInfos(services);
+                        List<String> permissions = new ArrayList<>();
+                        if(packInfo.requestedPermissions != null) {
+                            permissions.addAll(Arrays.asList(packInfo.requestedPermissions));
+
+                        }else{
+                            permissions.add("未检测到权限");
+                        }
+                        appInfo.setPermissionInfos(permissions);
+                        appInfo.setUid(packInfo.applicationInfo.uid);
                         appInfo.setUserApp(
                                 (packInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) ==
                                         0);
-                        appInfo.setInRom(
-                                (packInfo.applicationInfo.flags & ApplicationInfo
-                                        .FLAG_EXTERNAL_STORAGE) == 0);
-                        appInfo.setVersion(packInfo.versionName);
                         mGetPackageSizeInfoMethod
                                 .invoke(pm, packInfo.packageName, new IPackageStatsObserver.Stub() {
                                     @Override
@@ -136,6 +152,7 @@ public class SoftwareManageFragment
                                         }
                                     }
                                 });
+
                     }
                     countDownLatch.await();
                 } catch (Exception e) {
@@ -179,7 +196,7 @@ public class SoftwareManageFragment
                         @Override
                         public void onItemClick(View v, int pos) {
                             BottomSheetDialogView
-                                    .show(mContext, "包名：" + userAppInfos.get(pos).getPackname());
+                                    .show(mContext, userAppInfos.get(pos));
                         }
                     });
                 } else {
@@ -188,8 +205,7 @@ public class SoftwareManageFragment
                     mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
                         @Override
                         public void onItemClick(View v, int pos) {
-                            BottomSheetDialogView
-                                    .show(mContext, "包名：" + systemAppInfos.get(pos).getPackname());
+                            BottomSheetDialogView.show(mContext, systemAppInfos.get(pos));
                         }
                     });
                 }

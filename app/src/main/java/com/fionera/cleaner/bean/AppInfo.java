@@ -1,22 +1,58 @@
 package com.fionera.cleaner.bean;
 
+import android.content.pm.ActivityInfo;
+import android.content.pm.PermissionInfo;
+import android.content.pm.ServiceInfo;
 import android.graphics.drawable.Drawable;
 
+import java.util.List;
+
+/**
+ * Holder of packageInfo
+ */
 public class AppInfo {
-	private Drawable appIcon;
-	private String appName;
-	private String packname;
-	private String version;
+    private Drawable appIcon;
+    private String appName;
+    private String packageName;
+    private String version;
     private long pkgSize;
-	private int uid;
+    private int uid;
+    private boolean userApp;
 
-	public int getUid() {
-		return uid;
-	}
+    private List<String> serviceInfos;
+    private List<String> permissionInfos;
 
-	public void setUid(int uid) {
-		this.uid = uid;
-	}
+    public Drawable getAppIcon() {
+        return appIcon;
+    }
+
+    public void setAppIcon(Drawable appIcon) {
+        this.appIcon = appIcon;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 
     public long getPkgSize() {
         return pkgSize;
@@ -26,56 +62,35 @@ public class AppInfo {
         this.pkgSize = pkgSize;
     }
 
-	private boolean inRom;
-	
-	private boolean userApp;
+    public int getUid() {
+        return uid;
+    }
 
-	public Drawable getAppIcon() {
-		return appIcon;
-	}
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
 
-	public void setAppIcon(Drawable appIcon) {
-		this.appIcon = appIcon;
-	}
+    public boolean isUserApp() {
+        return userApp;
+    }
 
-	public String getAppName() {
-		return appName;
-	}
+    public void setUserApp(boolean userApp) {
+        this.userApp = userApp;
+    }
 
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
+    public List<String> getServiceInfos() {
+        return serviceInfos;
+    }
 
-	public String getPackname() {
-		return packname;
-	}
+    public void setServiceInfos(List<String> serviceInfos) {
+        this.serviceInfos = serviceInfos;
+    }
 
-	public void setPackname(String packname) {
-		this.packname = packname;
-	}
+    public List<String> getPermissionInfos() {
+        return permissionInfos;
+    }
 
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public boolean isInRom() {
-		return inRom;
-	}
-
-	public void setInRom(boolean inRom) {
-		this.inRom = inRom;
-	}
-
-	public boolean isUserApp() {
-		return userApp;
-	}
-
-	public void setUserApp(boolean userApp) {
-		this.userApp = userApp;
-	}
-
+    public void setPermissionInfos(List<String> permissionInfos) {
+        this.permissionInfos = permissionInfos;
+    }
 }

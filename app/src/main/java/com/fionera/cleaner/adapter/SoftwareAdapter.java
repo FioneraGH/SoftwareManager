@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -62,11 +61,11 @@ public class SoftwareAdapter
                 intent.addCategory("android.intent.category.DEFAULT");
                 intent.setData(Uri.parse(
                         "package:" + mListAppInfo.get(theHolder.getAdapterPosition())
-                                .getPackname()));
+                                .getPackageName()));
                 mContext.startActivity(intent);
             }
         });
-        theHolder.packageName = mListAppInfo.get(theHolder.getAdapterPosition()).getPackname();
+        theHolder.packageName = mListAppInfo.get(theHolder.getAdapterPosition()).getPackageName();
         theHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

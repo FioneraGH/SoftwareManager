@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue2"
+    android:background="@color/grey2"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -13,11 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/white"
         android:maxLines="2"
-        android:ellipsize="marquee"
-        android:text="title"
-        android:textSize="17sp"/>
+        android:text="应用分析"
+        android:textSize="17sp"
+        android:textColor="@color/blue2"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_bottom_sheet"

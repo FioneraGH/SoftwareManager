@@ -1,6 +1,7 @@
 package com.fionera.cleaner.utils;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 
@@ -60,6 +61,7 @@ public class StorageUtil {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static SDCardInfo getSDCardInfo() {
         if (Environment.isExternalStorageRemovable()) {
             String sDcString = Environment.getExternalStorageState();
@@ -69,8 +71,14 @@ public class StorageUtil {
                 try {
                     StatFs statfs = new StatFs(pathFile.getPath());
                     SDCardInfo info = new SDCardInfo();
-                    info.total = statfs.getTotalBytes();
-                    info.free = statfs.getAvailableBytes();
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        info.total = (long) statfs.getBlockSize() * (long) statfs.getBlockCount();
+                        info.total = (long) statfs.getBlockSize() * (long) statfs
+                                .getAvailableBlocks();
+                    } else {
+                        info.total = statfs.getTotalBytes();
+                        info.free = statfs.getAvailableBytes();
+                    }
                     return info;
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
@@ -80,12 +88,18 @@ public class StorageUtil {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public static SDCardInfo getSystemSpaceInfo() {
         File path = Environment.getDataDirectory();
-        StatFs stat = new StatFs(path.getPath());
+        StatFs statfs = new StatFs(path.getPath());
         SDCardInfo info = new SDCardInfo();
-        info.total = stat.getTotalBytes();
-        info.free = stat.getAvailableBytes();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            info.total = (long) statfs.getBlockSize() * (long) statfs.getBlockCount();
+            info.free = (long) statfs.getBlockSize() * (long) statfs.getAvailableBlocks();
+        } else {
+            info.total = statfs.getTotalBytes();
+            info.free = statfs.getAvailableBytes();
+        }
         return info;
     }
 }

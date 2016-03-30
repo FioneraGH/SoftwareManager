@@ -97,10 +97,16 @@ public class BottomSheetDialogView {
                 String prefix = "";
 
                 if (service.toLowerCase().contains("download")) {
-                    prefix = "下载服务：(可能后台下载)\n";
+                    prefix = "下载服务：(可能后台下载数据)\n";
                     holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
                 } else if (service.toLowerCase().contains("record")) {
-                    prefix = "录音服务：(可能后台录音)\n";
+                    prefix = "录音服务：(可能后台录音数据)\n";
+                    holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                } else if (service.toLowerCase().contains("capture")) {
+                    prefix = "抓取服务：(可能后台抓取数据)\n";
+                    holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                } else if (service.toLowerCase().contains("share")) {
+                    prefix = "共享服务：(可能后台共享数据)\n";
                     holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
                 } else {
                     holder.textView
@@ -118,12 +124,56 @@ public class BottomSheetDialogView {
                         prefix = "敏感权限：(相机)\n";
                         holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
                         break;
+                    case Manifest.permission.RECORD_AUDIO:
+                        prefix = "敏感权限：(录音)\n";
+                        holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                        break;
+                    case Manifest.permission.CALL_PHONE:
+                        prefix = "敏感权限：(拨打电话)\n";
+                        holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                        break;
+                    case Manifest.permission.READ_CALL_LOG:
+                        prefix = "敏感权限：(读取通话记录)\n";
+                        holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                        break;
+                    case Manifest.permission.READ_SMS:
+                        prefix = "敏感权限：(读取短信)\n";
+                        holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                        break;
                     case Manifest.permission.READ_CONTACTS:
                         prefix = "敏感权限：(读取联系人)\n";
                         holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
                         break;
+                    case Manifest.permission.SEND_SMS:
+                        prefix = "敏感权限：(发送短信)\n";
+                        holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                        break;
+                    case Manifest.permission.WRITE_CONTACTS:
+                        prefix = "敏感权限：(写入联系人)\n";
+                        holder.textView.setTextColor(ContextCompat.getColor(context, R.color.red));
+                        break;
                     case Manifest.permission.RECEIVE_BOOT_COMPLETED:
                         prefix = "风险权限：(开机自启动)\n";
+                        holder.textView
+                                .setTextColor(ContextCompat.getColor(context, R.color.blue2));
+                        break;
+                    case Manifest.permission.RECEIVE_SMS:
+                        prefix = "风险权限：(接收短信)\n";
+                        holder.textView
+                                .setTextColor(ContextCompat.getColor(context, R.color.blue2));
+                        break;
+                    case Manifest.permission.RECEIVE_MMS:
+                        prefix = "风险权限：(接收彩信)\n";
+                        holder.textView
+                                .setTextColor(ContextCompat.getColor(context, R.color.blue2));
+                        break;
+                    case Manifest.permission.SYSTEM_ALERT_WINDOW:
+                        prefix = "风险权限：(系统悬浮窗)\n";
+                        holder.textView
+                                .setTextColor(ContextCompat.getColor(context, R.color.blue2));
+                        break;
+                    case Manifest.permission.WAKE_LOCK:
+                        prefix = "风险权限：(设备唤醒)\n";
                         holder.textView
                                 .setTextColor(ContextCompat.getColor(context, R.color.blue2));
                         break;

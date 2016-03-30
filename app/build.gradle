@@ -13,7 +13,6 @@ android {
     }
     productFlavors{
         dev{
-            minSdkVersion 21
         }
     }
     buildTypes {

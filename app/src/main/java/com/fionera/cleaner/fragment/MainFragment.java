@@ -85,19 +85,19 @@ public class MainFragment
         SDCardInfo mSDCardInfo = StorageUtil.getSDCardInfo();
         SDCardInfo mSystemInfo = StorageUtil.getSystemSpaceInfo();
         long availBlock;
-        long TotalBlocks;
+        long totalBlocks;
         if (mSDCardInfo != null) {
             availBlock = mSDCardInfo.free + mSystemInfo.free;
-            TotalBlocks = mSDCardInfo.total + mSystemInfo.total;
+            totalBlocks = mSDCardInfo.total + mSystemInfo.total;
         } else {
             availBlock = mSystemInfo.free;
-            TotalBlocks = mSystemInfo.total;
+            totalBlocks = mSystemInfo.total;
         }
         final int offset = (int) Math
-                .round(((TotalBlocks - availBlock) / (double) TotalBlocks) * 100);
+                .round(((totalBlocks - availBlock) / (double) totalBlocks) * 100);
 
         arcStore.setProgress(1);
-        valueAnimator1 = ValueAnimator.ofFloat(0, offset);
+        valueAnimator1 = ValueAnimator.ofFloat(0f, offset);
         valueAnimator1.setDuration(2000);
         valueAnimator1.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -107,14 +107,13 @@ public class MainFragment
                     arcStore.setProgress(offset);
                 } else {
                     arcStore.setProgress(Math.round(
-                            arcStore.getProgress() + offset * ((float) animation
-                                    .getAnimatedValue()) / animation.getDuration()));
+                            arcStore.getProgress() + (float) animation.getAnimatedValue()));
                 }
             }
         });
         valueAnimator1.start();
-        capacity.setText(StorageUtil.convertStorage(TotalBlocks - availBlock) + "/" + StorageUtil
-                .convertStorage(TotalBlocks));
+        capacity.setText(StorageUtil.convertStorage(totalBlocks - availBlock) + "/" + StorageUtil
+                .convertStorage(totalBlocks));
 
         long availMemory = AppUtil.getAvailMemory(mContext);
         long totalMemory = AppUtil.getTotalMemory(mContext);
@@ -122,7 +121,7 @@ public class MainFragment
                 .round(((totalMemory - availMemory) / (double) totalMemory) * 100);
 
         arcProcess.setProgress(1);
-        valueAnimator2 = ValueAnimator.ofFloat(0, offset);
+        valueAnimator2 = ValueAnimator.ofFloat(0f, offset2);
         valueAnimator2.setDuration(2500);
         valueAnimator2.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -132,8 +131,7 @@ public class MainFragment
                     arcProcess.setProgress(offset2);
                 } else {
                     arcProcess.setProgress(Math.round(
-                            arcProcess.getProgress() + offset2 * ((float) animation
-                                    .getAnimatedValue()) / animation.getDuration()));
+                            arcProcess.getProgress() + (float) animation.getAnimatedValue()));
                 }
             }
         });

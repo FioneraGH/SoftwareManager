@@ -46,7 +46,7 @@ public class NetworkFragment
     @OnClick({R.id.fab_network_show_rules, R.id.btn_network_purge_rules, R.id
             .btn_network_apply_rules})
     void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.fab_network_show_rules:
                 showRules();
                 break;
@@ -153,14 +153,14 @@ public class NetworkFragment
         progress = ProgressDialog.show(mContext, "请稍候...", "应用IpTables规则中", true);
         handler = new Handler() {
             public void handleMessage(Message msg) {
-                if (progress != null) {
-                    progress.dismiss();
-                }
                 if (!DroidWallApi.hasRootAccess(mContext, true)) {
                     return;
                 }
                 if (DroidWallApi.applyIpTablesRules(mContext, true)) {
                     ShowToast.show("规则已应用");
+                }
+                if (progress != null) {
+                    progress.dismiss();
                 }
             }
         };
@@ -172,14 +172,14 @@ public class NetworkFragment
         progress = ProgressDialog.show(mContext, "请稍候...", "删除IpTables规则中", true);
         handler = new Handler() {
             public void handleMessage(Message msg) {
-                if (progress != null) {
-                    progress.dismiss();
-                }
                 if (!DroidWallApi.hasRootAccess(mContext, true)) {
                     return;
                 }
                 if (DroidWallApi.purgeIpTables(mContext, true)) {
                     ShowToast.show("规则已移除");
+                }
+                if (progress != null) {
+                    progress.dismiss();
                 }
             }
         };
@@ -191,13 +191,13 @@ public class NetworkFragment
         progress = ProgressDialog.show(mContext, "请稍候...", "正在获取IpTables规则", true);
         handler = new Handler() {
             public void handleMessage(Message msg) {
-                if (progress != null) {
-                    progress.dismiss();
-                }
                 if (!DroidWallApi.hasRootAccess(mContext, true)) {
                     return;
                 }
                 DroidWallApi.showIpTablesRules(mContext);
+                if (progress != null) {
+                    progress.dismiss();
+                }
             }
         };
         handler.sendEmptyMessageDelayed(0, 100);

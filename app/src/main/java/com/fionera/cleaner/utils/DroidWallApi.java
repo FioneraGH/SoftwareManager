@@ -133,7 +133,7 @@ public class DroidWallApi {
         final List<Integer> uids_wifi = new LinkedList<>();
         if (savedUids_wifi.length() > 0) {
             for (String uid_wifi : savedUids_wifi.split("|")) {
-                if (!uid_wifi.equals("")) {
+                if (!uid_wifi.equals("") && !uid_wifi.equals("|")) {
                     uids_wifi.add(Integer.parseInt(uid_wifi));
                 }
             }
@@ -141,7 +141,7 @@ public class DroidWallApi {
         final List<Integer> uids_3g = new LinkedList<>();
         if (savedUids_3g.length() > 0) {
             for (String uid_3g : savedUids_3g.split("|")) {
-                if (!uid_3g.equals("")) {
+                if (!uid_3g.equals("") && !uid_3g.equals("|")) {
                     uids_3g.add(Integer.parseInt(uid_3g));
                 }
             }

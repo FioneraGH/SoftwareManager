@@ -3,6 +3,7 @@ package com.fionera.cleaner.widget;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -12,26 +13,24 @@ public class ProgressDialogFragment
 
     int mIndeterminateDrawable;
     String mMessage;
-    static View mContentView;
 
     /**
      * Create a new instance of AbProgressDialogFragment.
      */
-    public static ProgressDialogFragment newInstance(int indeterminateDrawable, String message) {
+    public static ProgressDialogFragment newInstance(int indeterminateDrawable) {
         ProgressDialogFragment f = new ProgressDialogFragment();
         Bundle args = new Bundle();
         args.putInt("indeterminateDrawable", indeterminateDrawable);
-        args.putString("message", message);
         f.setArguments(args);
-
         return f;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mIndeterminateDrawable = getArguments().getInt("indeterminateDrawable");
-        mMessage = getArguments().getString("message");
+        mMessage = "请稍候";
 
         ProgressDialog mProgressDialog = new ProgressDialog(getActivity(),
                                                             android.R.style
@@ -46,12 +45,5 @@ public class ProgressDialogFragment
         }
 
         return mProgressDialog;
-    }
-
-    public void setMessage(String mMessage) {
-        if (mMessage != null) {
-            setMessage(mMessage);
-        }
-
     }
 }

@@ -101,7 +101,7 @@ public class SoftwareManageFragment
 
                 PackageManager pm = mContext.getPackageManager();
                 final List<PackageInfo> packInfos = pm.getInstalledPackages(
-                                PackageManager.GET_SERVICES | PackageManager.GET_PERMISSIONS);
+                        PackageManager.GET_SERVICES | PackageManager.GET_PERMISSIONS);
                 final CountDownLatch countDownLatch = new CountDownLatch(packInfos.size());
                 publishProgress(0, packInfos.size());
                 try {
@@ -113,19 +113,19 @@ public class SoftwareManageFragment
                         appInfo.setVersion(packInfo.versionName);
                         List<String> services = new ArrayList<>();
 
-                        if(packInfo.services != null) {
+                        if (packInfo.services != null) {
                             for (ServiceInfo serviceInfo : packInfo.services) {
                                 services.add(serviceInfo.name);
                             }
-                        }else{
+                        } else {
                             services.add("未检测到服务");
                         }
                         appInfo.setServiceInfos(services);
                         List<String> permissions = new ArrayList<>();
-                        if(packInfo.requestedPermissions != null) {
+                        if (packInfo.requestedPermissions != null) {
                             permissions.addAll(Arrays.asList(packInfo.requestedPermissions));
 
-                        }else{
+                        } else {
                             permissions.add("未检测到权限");
                         }
                         appInfo.setPermissionInfos(permissions);
@@ -190,17 +190,16 @@ public class SoftwareManageFragment
                 if (position == 0) {
                     topText.setText(getString(R.string.software_top_text, userAppInfos.size(),
                                               StorageUtil.convertStorage(allSize)));
-                    mAutoStartAdapter = new SoftwareAdapter(mContext, userAppInfos);
+                    mAutoStartAdapter = new SoftwareAdapter(mContext, userAppInfos, position);
                     recyclerView.setAdapter(mAutoStartAdapter);
                     mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
                         @Override
                         public void onItemClick(View v, int pos) {
-                            BottomSheetDialogView
-                                    .show(mContext, userAppInfos.get(pos));
+                            BottomSheetDialogView.show(mContext, userAppInfos.get(pos));
                         }
                     });
                 } else {
-                    mAutoStartAdapter = new SoftwareAdapter(mContext, systemAppInfos);
+                    mAutoStartAdapter = new SoftwareAdapter(mContext, systemAppInfos, position);
                     recyclerView.setAdapter(mAutoStartAdapter);
                     mAutoStartAdapter.setRvItemTouchListener(new RvItemTouchListener() {
                         @Override

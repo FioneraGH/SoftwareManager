@@ -2,17 +2,18 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '24.0.0 rc2'
+    buildToolsVersion '24.0.0 rc3'
 
     defaultConfig {
         applicationId "com.fionera.cleaner"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 3
-        versionName "1.0"
+        versionCode 4
+        versionName "1.0.20160421"
     }
     productFlavors{
         dev{
+            minSdkVersion 21
         }
     }
     buildTypes {
@@ -26,9 +27,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.android.support:design:23.2.1'
-    compile 'com.android.support:cardview-v7:23.2.1'
-    compile 'com.android.support:recyclerview-v7:23.2.1'
-    compile 'com.android.support:gridlayout-v7:23.2.1'
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:cardview-v7:23.3.0'
+    compile 'com.android.support:recyclerview-v7:23.3.0'
+    compile 'com.android.support:gridlayout-v7:23.3.0'
 }

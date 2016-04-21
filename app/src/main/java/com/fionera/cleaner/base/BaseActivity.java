@@ -47,18 +47,10 @@ public abstract class BaseActivity
     }
 
     public void showDialogLoading() {
-        showDialogLoading(null);
-    }
-
-    public void showDialogLoading(String msg) {
         if (mProgressDialogFragment == null) {
-            mProgressDialogFragment = ProgressDialogFragment.newInstance(0, null);
-        }
-        if (msg != null) {
-            mProgressDialogFragment.setMessage(msg);
+            mProgressDialogFragment = ProgressDialogFragment.newInstance(0);
         }
         mProgressDialogFragment.show(getSupportFragmentManager(), DIALOG_TAG);
-
     }
 
     public void dismissDialogLoading() {

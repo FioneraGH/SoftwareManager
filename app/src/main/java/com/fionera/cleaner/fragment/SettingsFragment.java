@@ -38,18 +38,6 @@ public class SettingsFragment
         findPreference("createShortCut").setTitle((hasShortcut() ? "删除" : "创建") + "\"一键加速\"快捷方式");
     }
 
-    @Override
-    public boolean onPreferenceClick(Preference preference) {
-        if ("createShortCut".equals(preference.getKey())) {
-            createShortCut(hasShortcut());
-        } else if ("pVersion".equals(preference.getKey())) {
-            ShowToast.show("暂无新版本");
-        } else if ("pAbout".equals(preference.getKey())) {
-            startActivity(new Intent(getActivity(), AboutActivity.class));
-        }
-        return false;
-    }
-
     private boolean hasShortcut() {
         final ContentResolver cr = getActivity().getContentResolver();
         final Uri CONTENT_URI = Uri
@@ -88,5 +76,17 @@ public class SettingsFragment
         if (!hidden) {
             checkInstallShortCut();
         }
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if ("createShortCut".equals(preference.getKey())) {
+            createShortCut(hasShortcut());
+        } else if ("pVersion".equals(preference.getKey())) {
+            ShowToast.show("暂无新版本");
+        } else if ("pAbout".equals(preference.getKey())) {
+            startActivity(new Intent(getActivity(), AboutActivity.class));
+        }
+        return false;
     }
 }

@@ -26,6 +26,7 @@ public class SoftwareAdapter
     public List<AppInfo> mListAppInfo;
     private LayoutInflater inflater = null;
     private Context mContext;
+    private int type;
 
     private RvItemTouchListener rvItemTouchListener;
 
@@ -33,10 +34,11 @@ public class SoftwareAdapter
         this.rvItemTouchListener = rvItemTouchListener;
     }
 
-    public SoftwareAdapter(Context context, List<AppInfo> apps) {
+    public SoftwareAdapter(Context context, List<AppInfo> apps, int type) {
         this.inflater = LayoutInflater.from(context);
         this.mContext = context;
         this.mListAppInfo = apps;
+        this.type = type;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class SoftwareAdapter
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         final ViewHolder theHolder = (ViewHolder) holder;
         theHolder.appIcon
                 .setImageDrawable(mListAppInfo.get(theHolder.getAdapterPosition()).getAppIcon());
@@ -63,8 +65,14 @@ public class SoftwareAdapter
                         "package:" + mListAppInfo.get(theHolder.getAdapterPosition())
                                 .getPackageName()));
                 mContext.startActivity(intent);
+                notifyItemRemoved(theHolder.getAdapterPosition());
             }
         });
+        if (1 == type) {
+            theHolder.uninstall.setVisibility(View.GONE);
+        } else {
+            theHolder.uninstall.setVisibility(View.VISIBLE);
+        }
         theHolder.packageName = mListAppInfo.get(theHolder.getAdapterPosition()).getPackageName();
         theHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

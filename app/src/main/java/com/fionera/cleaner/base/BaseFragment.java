@@ -21,18 +21,10 @@ public class BaseFragment
     }
 
     public void showDialogLoading() {
-        showDialogLoading(null);
-    }
-
-    public void showDialogLoading(String msg) {
         if (mProgressDialogFragment == null) {
-            mProgressDialogFragment = ProgressDialogFragment.newInstance(0, null);
-        }
-        if (msg != null) {
-            mProgressDialogFragment.setMessage(msg);
+            mProgressDialogFragment = ProgressDialogFragment.newInstance(0);
         }
         mProgressDialogFragment.show(getFragmentManager(), DIALOG_TAG);
-
     }
 
     public void dismissDialogLoading() {

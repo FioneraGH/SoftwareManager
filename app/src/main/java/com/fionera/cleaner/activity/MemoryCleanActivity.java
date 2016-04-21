@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.ActionBar;
@@ -162,23 +163,41 @@ public class MemoryCleanActivity
 
     @OnClick(R.id.btn_clear)
     public void onClickClear() {
-        /**
-         * 项目相对较少直接处理
-         */
-        long killAppMemory = 0;
-        for (int i = mAppProcessInfos.size() - 1; i >= 0; i--) {
-            if (mAppProcessInfos.get(i).checked) {
-                killAppMemory += mAppProcessInfos.get(i).memory;
-                mCoreService.killBackgroundProcess(mAppProcessInfos.get(i));
-                mAppProcessInfos.remove(mAppProcessInfos.get(i));
+        new AsyncTask<Void, Void, Void>() {
+            long killAppMemory = 0;
+
+            @Override
+            protected void onPreExecute() {
+                showDialogLoading();
             }
-        }
-        mClearMemoryAdapter.notifyDataSetChanged();
-        allMemory = allMemory - killAppMemory;
-        ShowToast.show("共清理" + StorageUtil.convertStorage(killAppMemory) + "内存");
-        if (allMemory >= 0) {
-            refreshTextCounter();
-        }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                for (int i = mAppProcessInfos.size() - 1; i >= 0; i--)
+
+                {
+                    if (mAppProcessInfos.get(i).checked) {
+                        killAppMemory += mAppProcessInfos.get(i).memory;
+                        mCoreService.killBackgroundProcess(mAppProcessInfos.get(i));
+                        mAppProcessInfos.remove(mAppProcessInfos.get(i));
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                dismissDialogLoading();
+                mClearMemoryAdapter.notifyDataSetChanged();
+                allMemory = allMemory - killAppMemory;
+                ShowToast.show("共清理" + StorageUtil.convertStorage(killAppMemory) + "内存");
+                if (allMemory >= 0)
+
+                {
+                    refreshTextCounter();
+                }
+            }
+        }.execute();
     }
 
     private void refreshTextCounter() {

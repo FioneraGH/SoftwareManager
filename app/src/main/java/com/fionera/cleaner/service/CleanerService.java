@@ -3,6 +3,7 @@ package com.fionera.cleaner.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.IPackageDataObserver;
 import android.content.pm.IPackageStatsObserver;
@@ -15,6 +16,7 @@ import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StatFs;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 
 import com.fionera.cleaner.bean.CacheInfo;
@@ -220,8 +222,8 @@ public class CleanerService
                                                        }
                                                    });
 
-                // TODO ROOT ABOVE M
-                if (false) {
+                if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                        .getBoolean("enableRoot", false)) {
                     AppUtil.getRootPermission(mContext);
                 }
                 countDownLatch.await();

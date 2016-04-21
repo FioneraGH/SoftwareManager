@@ -12,52 +12,67 @@
         android:scaleType="centerCrop"
         android:src="@drawable/iv_nav_header"/>
 
-    <LinearLayout
+
+    <com.fionera.cleaner.widget.DrawableTextView
+        android:id="@+id/tv_home_tag"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="60dp"
+        android:background="@drawable/sl_bg_drawer_item"
+        android:drawableLeft="@drawable/ic_drawer_home"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="24dp"
+        android:text="首页"
+        android:textSize="17sp"
+        app:left_height="24dp"
+        app:left_width="24dp"/>
 
-        <com.fionera.cleaner.widget.DrawableTextView
-            android:id="@+id/tv_home_tag"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/sl_bg_drawer_item"
-            android:drawableLeft="@drawable/ic_drawer_home"
-            android:drawablePadding="16dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="24dp"
-            android:text="首页"
-            android:textSize="17sp"
-            app:left_height="24dp"
-            app:left_width="24dp"/>
+    <com.fionera.cleaner.widget.DrawableTextView
+        android:id="@+id/tv_network_tag"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/sl_bg_drawer_item"
+        android:drawableLeft="@drawable/ic_drawer_network"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="24dp"
+        android:text="网络控制"
+        android:textSize="17sp"
+        app:left_height="24dp"
+        app:left_width="24dp"/>
 
-        <com.fionera.cleaner.widget.DrawableTextView
-            android:id="@+id/tv_network_tag"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/sl_bg_drawer_item"
-            android:drawableLeft="@drawable/ic_drawer_network"
-            android:drawablePadding="16dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="24dp"
-            android:text="网络控制"
-            android:textSize="17sp"
-            app:left_height="24dp"
-            app:left_width="24dp"/>
+    <com.fionera.cleaner.widget.DrawableTextView
+        android:id="@+id/tv_setting_tag"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/sl_bg_drawer_item"
+        android:drawableLeft="@drawable/ic_drawer_settings"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="24dp"
+        android:text="设置"
+        android:textSize="17sp"
+        app:left_height="24dp"
+        app:left_width="24dp"/>
 
-        <com.fionera.cleaner.widget.DrawableTextView
-            android:id="@+id/tv_setting_tag"
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@drawable/sl_bg_drawer_item"
-            android:drawableLeft="@drawable/ic_drawer_settings"
-            android:drawablePadding="16dp"
-            android:gravity="center_vertical"
-            android:paddingLeft="24dp"
-            android:text="设置"
-            android:textSize="17sp"
-            app:left_height="24dp"
-            app:left_width="24dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey2"/>
 
-    </LinearLayout>
+    <com.fionera.cleaner.widget.DrawableTextView
+        android:id="@+id/tv_setting_quit"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@drawable/sl_bg_drawer_item"
+        android:drawableLeft="@drawable/ic_drawer_quit"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="24dp"
+        android:text="退出"
+        android:textColor="@color/red"
+        android:textSize="17sp"
+        app:left_height="24dp"
+        app:left_width="24dp"/>
+
 </LinearLayout>

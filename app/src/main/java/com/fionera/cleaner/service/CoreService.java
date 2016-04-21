@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 
 import com.fionera.cleaner.R;
@@ -235,8 +236,8 @@ public class CoreService
                 forceStopPackage.setAccessible(true);
                 forceStopPackage.invoke(activityManager, packageName);
             } else {
-                // TODO ROOT TO KILL
-                if (false) {
+                if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext())
+                        .getBoolean("enableRoot", false)) {
                     AppUtil.killProcesses(appProcessInfo.pid, appProcessInfo.processName);
                 }
             }

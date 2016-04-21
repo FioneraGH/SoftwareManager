@@ -14,7 +14,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/category_other">
-
         <Preference
             android:key="pVersionDetail"
             android:title="版本信息" />

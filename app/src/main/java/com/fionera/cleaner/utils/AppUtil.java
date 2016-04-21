@@ -30,7 +30,7 @@ public class AppUtil {
             return info.versionName;
         } catch (Exception e) {
             e.printStackTrace();
-            return "1.0";
+            return "1.0.0";
         }
     }
 

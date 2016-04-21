@@ -4,6 +4,7 @@ import android.animation.ValueAnimator;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.TrafficStats;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -137,8 +138,8 @@ public class MainFragment
         });
         valueAnimator2.start();
 
-        long traffic = TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes();
-        tvTraffic.setText("流量已使用 " + StorageUtil.convertStorage(traffic));
+//        long traffic = TrafficStats.getMobileRxBytes() + TrafficStats.getMobileTxBytes();
+//        tvTraffic.setText("流量已使用 " + StorageUtil.convertStorage(traffic));
     }
 
     @Override

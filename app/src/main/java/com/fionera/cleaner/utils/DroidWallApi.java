@@ -105,13 +105,13 @@ public class DroidWallApi {
             for (DroidApp app : apps) {
                 if (app.selected_wifi) {
                     if (newuids_wifi.length() != 0) {
-                        newuids_wifi.append('|');
+                        newuids_wifi.append(',');
                     }
                     newuids_wifi.append(app.uid);
                 }
                 if (app.selected_3g) {
                     if (newuids_3g.length() != 0) {
-                        newuids_3g.append('|');
+                        newuids_3g.append(',');
                     }
                     newuids_3g.append(app.uid);
                 }
@@ -132,16 +132,17 @@ public class DroidWallApi {
         final String savedUids_3g = prefs.getString(PREF_3G_UIDS, "");
         final List<Integer> uids_wifi = new LinkedList<>();
         if (savedUids_wifi.length() > 0) {
-            for (String uid_wifi : savedUids_wifi.split("|")) {
-                if (!uid_wifi.equals("") && !uid_wifi.equals("|")) {
+            for (String uid_wifi : savedUids_wifi.split(",")) {
+                if (!uid_wifi.equals("")) {
                     uids_wifi.add(Integer.parseInt(uid_wifi));
                 }
             }
         }
         final List<Integer> uids_3g = new LinkedList<>();
         if (savedUids_3g.length() > 0) {
-            for (String uid_3g : savedUids_3g.split("|")) {
-                if (!uid_3g.equals("") && !uid_3g.equals("|")) {
+            for (String uid_3g : savedUids_3g.split(",")) {
+                if (!uid_3g.equals("")) {
+                    System.out.println(uid_3g);
                     uids_3g.add(Integer.parseInt(uid_3g));
                 }
             }
